@@ -70,6 +70,7 @@ GameObject:
   - component: {fileID: 7480353104571883619}
   - component: {fileID: 9057126948027507677}
   - component: {fileID: 7886985116049418904}
+  - component: {fileID: 878678626}
   m_Layer: 0
   m_Name: Trigger
   m_TagString: Tower
@@ -121,6 +122,24 @@ MonoBehaviour:
   isInTrigger: 0
   isInside: 0
   player: {fileID: 0}
+  infoText: {fileID: 0}
+  insideCamera: {fileID: 0}
+--- !u!114 &878678626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1400277244280300217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80a1af6721d6eda4aa9d697ddbc353cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  healthText: {fileID: 0}
+  infoText: {fileID: 0}
 --- !u!1 &2281198722915893743
 GameObject:
   m_ObjectHideFlags: 0

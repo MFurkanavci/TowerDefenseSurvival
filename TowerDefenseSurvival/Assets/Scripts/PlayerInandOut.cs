@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using TMPro;
 
 public class PlayerInandOut : MonoBehaviour
 {
     public bool isInTrigger = false;
     public bool isInside = false;
-    public GameObject player;
+    public GameObject player;   
+    public TowerResources towerResources;
+
+    public TextMeshProUGUI infoText, resourceText;
     Vector3 tempPos;
 
     public CinemachineVirtualCamera insideCamera;
@@ -16,6 +20,16 @@ public class PlayerInandOut : MonoBehaviour
     {
         if (isInTrigger)
         {
+
+            int resource = player.GetComponent<ResourceGathering>().resource;
+            if (isInside)
+            {
+                infoText.text = "Press E to go outside";
+            }
+            else
+            {
+                infoText.text = "Press \"E\" to go inside\nPress \"Q\" to bank resources";
+            }
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (isInside)
@@ -42,6 +56,9 @@ public class PlayerInandOut : MonoBehaviour
 
                 }
             }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+            }
         }
     }
 
@@ -57,6 +74,7 @@ public class PlayerInandOut : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            infoText.text = "";
             isInTrigger = false;
         }
     }

@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Resource
   - Tower
+  - Enemy
+  - PlayerBullet
+  - EnemyBullet
+  - EnemyAggro
   layers:
   - Default
   - TransparentFX
@@ -13,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Enemy
   - 
   - 
   - 

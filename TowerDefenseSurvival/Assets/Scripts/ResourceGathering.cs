@@ -9,6 +9,7 @@ public class ResourceGathering : MonoBehaviour
     public int maxResource = 10;
     public int resourceGain = 1;
     public TextMeshProUGUI resourceText;
+    public TextMeshProUGUI infoText;
     public Resource resourceScript;
 
     private bool isGathering = false;
@@ -44,6 +45,24 @@ public class ResourceGathering : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Resource"))
+        {
+            infoText.text = "";
+            isGathering = false;
+            resourceScript = null;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Resource"))
+        {
+            infoText.text = "Hold E to gather Resource";
+        }
+    }
+
     private bool isFull = false;
     private float resourceTimer = 0.0f;
 
@@ -70,4 +89,24 @@ public class ResourceGathering : MonoBehaviour
     {
         resourceText.text = "Resource: " + resource + "/" + maxResource;
     }
+
+    public void ResetResource()
+    {
+        resource = 0;
+        isFull = false;
+        UpdateResourceText();
+    }
+
+    public void SetMaxResource(int newMaxResource)
+    {
+        maxResource = newMaxResource;
+        UpdateResourceText();
+    }
+
+    public void SetResourceGain(int newResourceGain)
+    {
+        resourceGain = newResourceGain;
+    }
+
+    
 }
