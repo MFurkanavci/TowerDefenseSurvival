@@ -118,3 +118,4 @@ MonoBehaviour:
   maxResource: 10
   currentResource: 0
   resourceGain: 1
+  resourceData: {fileID: 11400000, guid: cdd42144c7ac93942a0402f0db277131, type: 2}

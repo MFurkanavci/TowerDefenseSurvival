@@ -8,8 +8,10 @@ public class PlayerInandOut : MonoBehaviour
 {
     public bool isInTrigger = false;
     public bool isInside = false;
-    public GameObject player;   
+    public GameObject player, TowerResourcesPanel;   
     public TowerResources towerResources;
+
+    public MainTurretControls mainTurretControls;
 
     public TextMeshProUGUI infoText, resourceText;
     Vector3 tempPos;
@@ -20,7 +22,6 @@ public class PlayerInandOut : MonoBehaviour
     {
         if (isInTrigger)
         {
-
             int resource = player.GetComponent<ResourceGathering>().resource;
             if (isInside)
             {
@@ -34,30 +35,25 @@ public class PlayerInandOut : MonoBehaviour
             {
                 if (isInside)
                 {
-                    insideCamera.Follow = player.transform;
-                    insideCamera.LookAt = player.transform;
-                    insideCamera.m_Lens.FieldOfView = 60f;
                     isInside = false;
                     player.transform.position = tempPos;
-                    player.GetComponent<CharaterMovement>().enabled = true;
-                    player.GetComponent<CharacterController>().enabled = true;
+                    player.SetActive(true);
+                    mainTurretControls.isInside = false;
                 }
                 else
                 {
-                    player.GetComponent<CharaterMovement>().enabled = false;
-                    player.GetComponent<CharacterController>().enabled = false;
-                    tempPos = player.transform.position;
-                    tempPos.y = 0.5f;
-                    player.transform.position = new Vector3(0,0,0);
                     isInside = true;
-                    insideCamera.Follow = gameObject.transform.parent.transform;
-                    insideCamera.LookAt = gameObject.transform.parent.transform;
-                    insideCamera.m_Lens.FieldOfView = 90f;
+                    tempPos = player.transform.position;
+                    player.SetActive(false);
+                    mainTurretControls.isInside = true;
 
                 }
+                CameraControls();
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
+                towerResources.ModifyResource(TowerResources.ResourceType.Wood, resource, true);
+                player.GetComponent<ResourceGathering>().ResetResource();
             }
         }
     }
@@ -66,6 +62,7 @@ public class PlayerInandOut : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            TowerResourcesPanel.SetActive(true);
             isInTrigger = true;
         }
     }
@@ -75,7 +72,39 @@ public class PlayerInandOut : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             infoText.text = "";
+            TowerResourcesPanel.SetActive(false);
             isInTrigger = false;
+        }
+    }
+
+    public void CameraControls()
+    {
+        //we need to adjust few thing for camera, first we need to chanege the camera follow and lookat to the player or the tower and change the fov,and follow offsets
+
+        float insideCameraFOV = 90f;
+        float outsideCameraFOV = 60f;
+
+        float  insideCameraFollowOffsetx = 0f;
+        float  insideCameraFollowOffsety = 25f;
+        float  insideCameraFollowOffsetz = -8.5f;
+
+        float outsideCameraFollowOffsetx = 0f;
+        float outsideCameraFollowOffsety = 15f;
+        float outsideCameraFollowOffsetz = -10f;
+
+        if(isInside)
+        {
+            insideCamera.Follow = gameObject.transform.parent.transform;
+            insideCamera.LookAt = gameObject.transform.parent.transform;
+            insideCamera.m_Lens.FieldOfView = insideCameraFOV;
+            insideCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(insideCameraFollowOffsetx, insideCameraFollowOffsety, insideCameraFollowOffsetz);
+        }
+        else
+        {
+            insideCamera.Follow = player.transform;
+            insideCamera.LookAt = player.transform;
+            insideCamera.m_Lens.FieldOfView = outsideCameraFOV;
+            insideCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(outsideCameraFollowOffsetx, outsideCameraFollowOffsety, outsideCameraFollowOffsetz);
         }
     }
 }

@@ -11,9 +11,11 @@ public class Resource : MonoBehaviour
 
     public int resourceGain = 1;
 
+    public ResourceData resourceData;
+
     public void Start()
     {
-        currentResource = maxResource;
+        SOData(resourceData);
     }
 
     public void Update()
@@ -32,5 +34,11 @@ public class Resource : MonoBehaviour
     public void GatherResource(int amount)
     {
         currentResource -= amount;
+    }
+
+    public void SOData(ResourceData data)
+    {
+        maxResource = resourceData.resourceMaxAmount;
+        currentResource = resourceData.resourceAmount;
     }
 }
