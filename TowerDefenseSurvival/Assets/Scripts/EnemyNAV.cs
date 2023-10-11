@@ -6,9 +6,10 @@ using UnityEngine.AI;
 public class EnemyNAV : MonoBehaviour
 { 
     public Transform target;
-
     public Transform mainTarget;
-    private NavMeshAgent agent;
+
+    public bool isAggro = false;
+    public NavMeshAgent agent;
 
     private void Start()
     {

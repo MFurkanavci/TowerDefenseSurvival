@@ -8,6 +8,7 @@ public class EnemyAggro : MonoBehaviour
     public float aggroAngle = 45.0f;
     public float aggroTime = 5.0f;
     public float aggroTimer = 0.0f;
+    public Vector3 aggroStopDistance;
     public bool isAggro = false;
     public Transform target;
     public EnemyNAV enemyNAV;
@@ -47,17 +48,9 @@ public class EnemyAggro : MonoBehaviour
             isAggro = true;
             target = player;
             enemyNAV.SetTarget(target);
+            print("fix");
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, aggroRange);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * aggroRange);
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, aggroAngle, 0) * transform.forward * aggroRange);
-        Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, -aggroAngle, 0) * transform.forward * aggroRange);
-    }
+    
 }

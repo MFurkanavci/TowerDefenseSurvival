@@ -6,10 +6,10 @@ using TMPro;
 public class TowerResources : MonoBehaviour
 {
     ResourceTypes.Resources resourceTypes;
-    public int Wood { get; private set; }
-    public int Stone { get; private set; }
-    public int Iron { get; private set; }
-    public int Gold { get; private set; }
+    public float Wood { get; private set; }
+    public float Stone { get; private set; }
+    public float Iron { get; private set; }
+    public float Gold { get; private set; }
 
 
     public int woodMax;
@@ -48,7 +48,7 @@ public class TowerResources : MonoBehaviour
         }
     }
 
-    public void ModifyResource(ResourceTypes.Resources resource, int amount)
+    public void ModifyResource(ResourceTypes.Resources resource, float amount)
     {
         switch (resource)
         {
@@ -58,7 +58,7 @@ public class TowerResources : MonoBehaviour
             case ResourceTypes.Resources.Stone:
                 Stone += amount;
                 break;
-            case ResourceTypes.Resources.Food:
+            case ResourceTypes.Resources.Iron:
                 Iron += amount;
                 break;
             case ResourceTypes.Resources.Gold:
@@ -69,10 +69,10 @@ public class TowerResources : MonoBehaviour
     }
     public void UpdateResources()
     {
-        resourcepanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Wood: " + Wood + "/" + woodMax;
-        resourcepanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Stone: " + Stone + "/" + stoneMax;
-        resourcepanel.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = "Iron: " + Iron + "/" + ironMax;
-        resourcepanel.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "Gold: " + Gold + "/" + goldMax;
+        resourcepanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"Wood: {Wood} kg. / {woodMax} kg.";
+        resourcepanel.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"Stone: {Stone} kg. / {stoneMax} kg.";
+        resourcepanel.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = $"Gold: {Gold} kg. / {goldMax} kg.";
+        resourcepanel.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"Iron: {Iron} kg. / {ironMax} kg.";
     }
     
 }

@@ -44,15 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6f31cb7bf25df41bf6440fe6a8dfe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  turretData: {fileID: 11400000, guid: 14397efbeacd96a4ba852b923af48e34, type: 2}
   range: 30
   fireRate: 5
   bulletSpeed: 45
   rotationSpeed: 5
   rotationPart: {fileID: 0}
-  bulletPrefab: {fileID: 912246007099814282, guid: 9d745bb25591066418fea6d6038ab801, type: 3}
+  bulletPrefab: {fileID: 0}
   bulletSpawnPoint: {fileID: 0}
-  turretData: {fileID: 11400000, guid: 13d19a16c60b2d54c8c873722079ffd3, type: 2}
+  targetPriority: 1
 --- !u!1 &1480978804
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,15 +128,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6f31cb7bf25df41bf6440fe6a8dfe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  turretData: {fileID: 11400000, guid: 13d19a16c60b2d54c8c873722079ffd3, type: 2}
   range: 30
   fireRate: 5
   bulletSpeed: 45
   rotationSpeed: 5
   rotationPart: {fileID: 0}
-  bulletPrefab: {fileID: 912246007099814282, guid: 9d745bb25591066418fea6d6038ab801, type: 3}
+  bulletPrefab: {fileID: 0}
   bulletSpawnPoint: {fileID: 0}
-  turretData: {fileID: 11400000, guid: 14397efbeacd96a4ba852b923af48e34, type: 2}
+  targetPriority: 0
 --- !u!1 &302509084803669907
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,7 +316,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6418410294488891798
 Transform:
   m_ObjectHideFlags: 0
@@ -538,7 +538,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7694438224920255021
 Transform:
   m_ObjectHideFlags: 0

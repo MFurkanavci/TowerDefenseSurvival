@@ -1,19 +1,21 @@
 using UnityEngine;
 
 public class CharaterMovement : MonoBehaviour
-{   
-    [SerializeField]
-    private float speed = 5f;
+{
+    public float currentSpeed;
 
     [SerializeField]
 
     GameObject model;
 
     CharacterController controller;
+
+    ResourceGathering resourceGathering;
     
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        resourceGathering = GetComponent<ResourceGathering>();
     }
 
     void Update()
@@ -30,7 +32,7 @@ public class CharaterMovement : MonoBehaviour
 
         // Move player
         Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * speed * Time.deltaTime);
+        controller.Move(move * currentSpeed * Time.deltaTime);
     }
 
     public void LookAtMouse(GameObject model)
@@ -45,5 +47,10 @@ public class CharaterMovement : MonoBehaviour
             Vector3 point = ray.GetPoint(distance);
             model.transform.LookAt(new Vector3(point.x, model.transform.position.y, point.z));
         }
+    }
+
+    public void SetSpeed(float speed)
+    {
+        currentSpeed = speed;
     }
 }

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6db867f095774643b758e3a6711d6da, type: 3}
   m_Name: Wood
   m_EditorClassIdentifier: 
-  resourceName: Wood
-  resourceAmount: 15
-  resourceMaxAmount: 15
+  resourceTypes: 0
+  resourceMinWeightAmount: 5
+  resourceMaxWeightAmount: 25
   resourceMaxAmountPerDay: 0
   resourceRegenRate: 0
-  resourceWeight: 25
-  resourceQuality: 0
+  resourceWeight: 0
+  resourceQuality: 15
   resourcePrefab: {fileID: 3904598646383382824, guid: 433a0c46f97af2f4d9b3fc2bd9cef895, type: 3}

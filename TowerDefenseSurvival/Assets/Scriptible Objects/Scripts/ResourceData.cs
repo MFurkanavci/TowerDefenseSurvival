@@ -4,11 +4,11 @@ using UnityEngine;
 public class ResourceData : ScriptableObject
 {
     public ResourceTypes.Resources resourceTypes;
-    public int resourceAmount;
-    public int resourceMaxAmount;
+    public float resourceMinWeightAmount;
+    public float resourceMaxWeightAmount;
     public int resourceMaxAmountPerDay;
     public float resourceRegenRate;
-    public int resourceWeight;
+    public float resourceWeight;
     public int resourceQuality;
 
     public GameObject resourcePrefab;

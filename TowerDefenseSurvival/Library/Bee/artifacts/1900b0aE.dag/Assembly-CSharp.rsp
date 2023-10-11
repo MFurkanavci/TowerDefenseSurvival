@@ -365,6 +365,7 @@
 "Assets/Scripts/EnemyNAV.cs"
 "Assets/Scripts/EnemySpawner.cs"
 "Assets/Scripts/MainTurretControls.cs"
+"Assets/Scripts/Player.cs"
 "Assets/Scripts/PlayerInandOut.cs"
 "Assets/Scripts/PlayerWeapon.cs"
 "Assets/Scripts/Resource.cs"
@@ -374,6 +375,7 @@
 "Assets/Scripts/TowerDefence.cs"
 "Assets/Scripts/TowerHealth.cs"
 "Assets/Scripts/TowerResources.cs"
+"Assets/Scripts/UIHandler.cs"
 -langversion:9.0
 
 /deterministic

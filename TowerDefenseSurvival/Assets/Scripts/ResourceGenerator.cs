@@ -63,19 +63,19 @@ public class ResourceGenerator : MonoBehaviour
 
     private ResourceData GetRandomResource()
     {
-        int totalWeight = 0;
+        int totalQuality = 0;
         foreach (ResourceData resource in resources)
         {
-            totalWeight += resource.resourceWeight;
+            totalQuality += resource.resourceQuality;
         }
-        if (totalWeight <= 0) return null; // No valid resources to choose from
+        if (totalQuality <= 0) return null; // No valid resources to choose from
 
-        int randomWeight = Random.Range(0, totalWeight);
-        int currentWeight = 0;
+        int randomQuality = Random.Range(0, totalQuality);
+        int currentQuality = 0;
         foreach (ResourceData resource in resources)
         {
-            currentWeight += resource.resourceWeight;
-            if (currentWeight >= randomWeight)
+            currentQuality += resource.resourceQuality;
+            if (currentQuality >= randomQuality)
             {
                 return resource;
             }

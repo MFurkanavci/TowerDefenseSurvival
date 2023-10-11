@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Stone
   m_EditorClassIdentifier: 
   resourceTypes: 1
-  resourceAmount: 20
-  resourceMaxAmount: 20
+  resourceMinWeightAmount: 15
+  resourceMaxWeightAmount: 70
   resourceMaxAmountPerDay: 0
   resourceRegenRate: 0
-  resourceWeight: 75
-  resourceQuality: 0
+  resourceWeight: 0
+  resourceQuality: 20
   resourcePrefab: {fileID: 3904598646383382824, guid: 64f4f647082ffa744a1dd377fd56e7aa, type: 3}

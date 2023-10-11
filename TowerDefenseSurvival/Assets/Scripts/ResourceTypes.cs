@@ -8,7 +8,7 @@ public class ResourceTypes
     {
         Wood,
         Stone,
-        Food,
+        Iron,
         Gold
     }
 }

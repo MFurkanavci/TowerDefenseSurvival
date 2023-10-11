@@ -38,8 +38,10 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\CharaterMovement.cs" />
      <Compile Include="Assets\Scripts\PlayerInandOut.cs" />
+     <Compile Include="Assets\Scriptible Objects\Player\PlayerData.cs" />
      <Compile Include="Assets\Scriptible Objects\Scripts\TurretData.cs" />
      <Compile Include="Assets\Scripts\EnemyNAV.cs" />
+     <Compile Include="Assets\Scriptible Objects\Scripts\WeaponData.cs" />
      <Compile Include="Assets\Scripts\TowerHealth.cs" />
      <Compile Include="Assets\Scripts\MainTurretControls.cs" />
      <Compile Include="Assets\Scripts\ResourceGenerator.cs" />
@@ -51,14 +53,14 @@
      <Compile Include="Assets\Scripts\ResourceGathering.cs" />
      <Compile Include="Assets\Scripts\EnemySpawner.cs" />
      <Compile Include="Assets\destroy.cs" />
+     <Compile Include="Assets\Scripts\ResourceTypes.cs" />
      <Compile Include="Assets\Scripts\TowerDefence.cs" />
      <Compile Include="Assets\Scripts\PlayerWeapon.cs" />
      <Compile Include="Assets\Scriptible Objects\Scripts\EnemyData.cs" />
      <Compile Include="Assets\Scripts\Resource.cs" />
      <Compile Include="Assets\Scripts\Bullet.cs" />
-     <Compile Include="Assets\Scriptible Objects\Player\PlayerData.cs" />
-     <Compile Include="Assets\Scriptible Objects\Scripts\WeaponData.cs" />
-     <Compile Include="Assets\Scripts\ResourceTypes.cs" />
+     <Compile Include="Assets\Scripts\Player.cs" />
+     <Compile Include="Assets\Scripts\UIHandler.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

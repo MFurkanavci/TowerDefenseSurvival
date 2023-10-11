@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,33 +6,37 @@ using TMPro;
 
 public class ResourceGathering : MonoBehaviour
 {
-    public int maxResource = 10;
-    public int resourceGain = 1;
-    [SerializeField] private bool isInRange = false;
+    public float maxResourceWeight = 10;
+    public float resourceGain = 1;
     public float resourceGatherSpeed = 1.0f;
+    public TextMeshProUGUI materialInfoText, totalWeightText,keyInfoText;
+
+    private bool isInRange = false;
+
     private float resourceTimer = 0.0f;
-
-    public TextMeshProUGUI infoText;
-
+    private CharaterMovement charaterMovement;
     private Resource resource;
     private ResourceTypes.Resources resourceTypes;
+    private Dictionary<ResourceTypes.Resources, float> resourceAndWeight = new Dictionary<ResourceTypes.Resources, float>();
 
-    public PlayerData playerData;
+    Player player;
+    private PlayerData playerData;
     public GameObject resourcePanel;
-    public Dictionary<ResourceTypes.Resources, int> resourceAmounts = new Dictionary<ResourceTypes.Resources, int>();
 
     private void Start()
     {
+        playerData = GetComponent<Player>().playerData;
         SOData(playerData);
         InitializeResourceAmounts();
         UpdateInfoText();
+        charaterMovement = GetComponent<CharaterMovement>();
     }
 
     private void InitializeResourceAmounts()
     {
         foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
         {
-            resourceAmounts.Add(resource, 0);
+            resourceAndWeight.Add(resource, 0);
         }
     }
 
@@ -39,13 +44,13 @@ public class ResourceGathering : MonoBehaviour
     {
         resourcePanel.SetActive(true);
 
-        foreach (ResourceTypes.Resources resource in resourceAmounts.Keys)
+        foreach (ResourceTypes.Resources resource in resourceAndWeight.Keys)
         {
-            int amount = resourceAmounts[resource];
-            int max = maxResource;
-            resourcePanel.transform.Find(resource.ToString()).GetComponent<TextMeshProUGUI>().text =
-                $"{resource}: {amount}/{max}";
+            float weight = resourceAndWeight[resource];
+            var resourceText = resourcePanel.transform.Find(resource.ToString()).GetComponent<TextMeshProUGUI>();
+            resourceText.text = $"{resource}\n{Math.Round(weight,1)} kg.";
         }
+        totalWeightText.text = $"Total Weight\n{Math.Round(GetTotalWeight(), 1)} kg. / {maxResourceWeight} kg.";
     }
 
     private void OnTriggerStay(Collider other)
@@ -53,9 +58,20 @@ public class ResourceGathering : MonoBehaviour
         if (other.CompareTag("Resource"))
         {
             isInRange = true;
-            infoText.text = other.GetComponent<Resource>().resourceData.resourceTypes.ToString();
+            string resourceWeight = Math.Round(other.GetComponent<Resource>().currentResource, 2).ToString();
+            string resourceType = other.GetComponent<Resource>().resourceData.resourceTypes.ToString();
+            materialInfoText.text = $"{resourceWeight} kg. of {resourceType}";
             resourceTypes = other.GetComponent<Resource>().resourceData.resourceTypes;
             resource = other.GetComponent<Resource>();
+
+            if (resource.currentResource > resourceGain)
+            {
+                keyInfoText.text = $"Press E to gather \n{Math.Round(resourceGain,1)} kg. of {resourceType}";
+            }
+            else
+            {
+                keyInfoText.text = $"Press E to gather \n{Math.Round(resource.currentResource,1)} kg. of {resourceType}";
+            }
             UpdateInfoText();
         }
     }
@@ -65,6 +81,8 @@ public class ResourceGathering : MonoBehaviour
         if (other.CompareTag("Resource"))
         {
             isInRange = false;
+            materialInfoText.text = "";
+            keyInfoText.text = "";
         }
     }
 
@@ -76,31 +94,52 @@ public class ResourceGathering : MonoBehaviour
             if (resourceTimer >= resourceGatherSpeed)
             {
                 resourceTimer = 0.0f;
-                if (resourceAmounts[resourceTypes] < maxResource)
+                if (resourceGain < resource.currentResource)
                 {
-                    if (resource.currentResource <= resourceGain)
-                    {
-                        resourceAmounts[resourceTypes] += resource.currentResource;
-                        resource.currentResource = 0;
-                    }
-                    else
-                    {
-                        resourceAmounts[resourceTypes] += resourceGain;
-                        resource.currentResource -= resourceGain;
-                    }
-                    UpdateInfoText();
-                    print("düzeltilmeli");
-
+                    resourceAndWeight[resourceTypes] += resourceGain;
+                    resource.currentResource -= resourceGain;
                 }
+                else
+                {
+                    resourceAndWeight[resourceTypes] += resource.currentResource;
+                    resource.currentResource = 0;
+                }
+                resource.SetScale();
+                UpdateInfoText();
             }
         }
     }
 
     private void Update()
     {
+        if(resource == null)
+        {
+            keyInfoText.text = "";
+            materialInfoText.text = "";
+            isInRange = false;
+        }
+        
         if (Input.GetKey(KeyCode.E))
         {
             GatherResource();
+        }
+
+        UpdateWeightStats();
+    }
+
+    private void UpdateWeightStats()
+    {
+        switch (CurrentWeight())
+        {
+            case Weight.UnderWeight:
+                SetUnderWeightStats();
+                break;
+            case Weight.NormalWeight:
+                SetNormalWeightStats();
+                break;
+            case Weight.OverWeight:
+                SetOverWeightStats();
+                break;
         }
     }
 
@@ -108,20 +147,71 @@ public class ResourceGathering : MonoBehaviour
     {
         foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
         {
-            resourceAmounts[resource] = 0;
+            resourceAndWeight[resource] = 0;
         }
         UpdateInfoText();
     }
 
-    public int GetResourceAmount(ResourceTypes.Resources resource)
+    public float GetResourceAmount(ResourceTypes.Resources resource)
     {
-        return resourceAmounts[resource];
+        return resourceAndWeight[resource];
     }
 
     public void SOData(PlayerData data)
     {
-        maxResource *= data.maxResourceMultiplier;
-        resourceGain *= data.resourceGainMultiplier;
-        resourceGatherSpeed /= data.resourceGatherSpeedMultiplier;
+        maxResourceWeight *= MathF.Round(data.maxWeightMultiplier,1);
+        resourceGain *= MathF.Round(data.resourceGainMultiplier,1);
+        resourceGatherSpeed /= MathF.Round(data.resourceGatherSpeedMultiplier,1);
+    }
+
+    public float GetTotalWeight()
+    {
+        float totalWeight = 0;
+        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+        {
+            totalWeight += resourceAndWeight[resource];
+        }
+        return totalWeight;
+    }
+
+    public enum Weight
+    {
+        UnderWeight,
+        NormalWeight,
+        OverWeight
+    }
+
+    public Weight CurrentWeight()
+    {
+        if (GetTotalWeight() < maxResourceWeight / 2)
+        {
+            return Weight.UnderWeight;
+        }
+        else if (GetTotalWeight() < maxResourceWeight)
+        {
+            return Weight.NormalWeight;
+        }
+        else
+        {
+            return Weight.OverWeight;
+        }
+    }
+
+    private void SetUnderWeightStats()
+    {
+        resourceGatherSpeed = 1.0f / 1.15f;
+        charaterMovement.SetSpeed(playerData.speed * 1.5f);
+    }
+
+    private void SetNormalWeightStats()
+    {
+        resourceGatherSpeed = 1.0f;
+        charaterMovement.SetSpeed(playerData.speed);
+    }
+
+    private void SetOverWeightStats()
+    {
+        resourceGatherSpeed = 1.0f * 1.15f;
+        charaterMovement.SetSpeed(playerData.OverWeightSpeed);
     }
 }

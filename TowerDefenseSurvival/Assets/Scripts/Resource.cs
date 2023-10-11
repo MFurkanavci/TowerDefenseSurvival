@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,10 +6,9 @@ using UnityEngine;
 
 public class Resource : MonoBehaviour
 {
-    public int maxResource = 10;
-    public int currentResource;
-
-    public int resourceGain = 1;
+    public float maxResource;
+    public float minResource;
+    public float currentResource;
 
     public ResourceData resourceData;
 
@@ -21,14 +21,14 @@ public class Resource : MonoBehaviour
 
     public void Update()
     {
-        if (currentResource <= 0)
+        if (currentResource < 0.1f)
         {
             ResourceGenerator.currentResourcesForDay--;
             Destroy(gameObject);
         }
     }
 
-    public int GatherResource(int amount)
+    public float GatherResource(float amount)
     {
         if (currentResource >= amount)
         {
@@ -37,7 +37,7 @@ public class Resource : MonoBehaviour
         }
         else
         {
-            int temp = currentResource;
+            float temp = currentResource;
             currentResource = 0;
             return temp;
         }
@@ -45,8 +45,18 @@ public class Resource : MonoBehaviour
 
     public void SOData(ResourceData data)
     {
-        maxResource = resourceData.resourceMaxAmount;
-        currentResource = resourceData.resourceAmount;
-        resourceTypes = resourceData.resourceTypes;
+        resourceTypes = data.resourceTypes;
+        maxResource = data.resourceMaxWeightAmount;
+        minResource = data.resourceMinWeightAmount;
+        currentResource = MathF.Round(UnityEngine.Random.Range(minResource, maxResource), 1);
+
+        gameObject.name = resourceTypes.ToString();
+    }
+
+    public void SetScale()
+    {
+        float scale = Mathf.Clamp(currentResource / maxResource, 0.5f, 1.5f);
+
+        transform.localScale = new Vector3(scale, scale, scale);
     }
 }

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Gold
   m_EditorClassIdentifier: 
   resourceTypes: 3
-  resourceAmount: 5
-  resourceMaxAmount: 5
+  resourceMinWeightAmount: 5
+  resourceMaxWeightAmount: 15
   resourceMaxAmountPerDay: 0
   resourceRegenRate: 0
-  resourceWeight: 10
-  resourceQuality: 0
+  resourceWeight: 0
+  resourceQuality: 5
   resourcePrefab: {fileID: 3904598646383382824, guid: 2fb853adb3c5a994a959f2d5ae2b9588, type: 3}

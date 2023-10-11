@@ -13,8 +13,18 @@ MonoBehaviour:
   m_Name: Player
   m_EditorClassIdentifier: 
   playerName: Player
+  playerID: 0
+  description: Basic dude.
+  level: 1
+  experience: 0
+  maxExperience: 100
+  maxHealth: 100
   health: 100
-  maxResourceMultiplier: 1
+  experienceMultiplier: 1
+  healthMultiplier: 1
+  maxWeightMultiplier: 1
   resourceGainMultiplier: 2
   resourceGatherSpeedMultiplier: 3
+  speed: 7
+  OverWeightSpeed: 3
   weaponData: {fileID: 11400000, guid: 952ad90c80999bb47abef7b9b6497e13, type: 2}
