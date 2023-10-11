@@ -5,108 +5,123 @@ using TMPro;
 
 public class ResourceGathering : MonoBehaviour
 {
-    public int resource = 0;
     public int maxResource = 10;
     public int resourceGain = 1;
-    public TextMeshProUGUI resourceText;
+    [SerializeField] private bool isInRange = false;
+    public float resourceGatherSpeed = 1.0f;
+    private float resourceTimer = 0.0f;
+
     public TextMeshProUGUI infoText;
-    public Resource resourceScript;
 
-    private bool isGathering = false;
+    private Resource resource;
+    private ResourceTypes.Resources resourceTypes;
 
-    private void Update()
+    public PlayerData playerData;
+    public GameObject resourcePanel;
+    public Dictionary<ResourceTypes.Resources, int> resourceAmounts = new Dictionary<ResourceTypes.Resources, int>();
+
+    private void Start()
     {
-        // Check if the resource is full before proceeding
-        if (isFull)
-        {
-            return;
-        }
+        SOData(playerData);
+        InitializeResourceAmounts();
+        UpdateInfoText();
+    }
 
-        // Gather resources if conditions are met
-        if (isGathering && resourceScript != null)
+    private void InitializeResourceAmounts()
+    {
+        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
         {
-            resourceTimer += Time.deltaTime;
-            if (resourceTimer >= 1.0f)
-            {
-                GatherResource();
-                UpdateResourceText();
-            }
+            resourceAmounts.Add(resource, 0);
+        }
+    }
+
+    private void UpdateInfoText()
+    {
+        resourcePanel.SetActive(true);
+
+        foreach (ResourceTypes.Resources resource in resourceAmounts.Keys)
+        {
+            int amount = resourceAmounts[resource];
+            int max = maxResource;
+            resourcePanel.transform.Find(resource.ToString()).GetComponent<TextMeshProUGUI>().text =
+                $"{resource}: {amount}/{max}";
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("Resource"))
+        if (other.CompareTag("Resource"))
         {
-            if (Input.GetKey(KeyCode.E) && !isFull)
-            {
-                StartGathering(other.gameObject.GetComponent<Resource>());
-            }
+            isInRange = true;
+            infoText.text = other.GetComponent<Resource>().resourceData.resourceTypes.ToString();
+            resourceTypes = other.GetComponent<Resource>().resourceData.resourceTypes;
+            resource = other.GetComponent<Resource>();
+            UpdateInfoText();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Resource"))
+        if (other.CompareTag("Resource"))
         {
-            infoText.text = "";
-            isGathering = false;
-            resourceScript = null;
+            isInRange = false;
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Resource"))
-        {
-            infoText.text = "Hold E to gather Resource";
-        }
-    }
-
-    private bool isFull = false;
-    private float resourceTimer = 0.0f;
-
-    private void StartGathering(Resource resourceToGather)
-    {
-        isGathering = true;
-        resourceScript = resourceToGather;
     }
 
     private void GatherResource()
     {
-        resourceScript.GatherResource(resourceGain);
-        resource += resourceGain;
-        resourceTimer = 0.0f;
-
-        // Check if the resource is now full
-        if (resource >= maxResource)
+        if (isInRange && resource != null)
         {
-            isFull = true;
+            resourceTimer += Time.deltaTime;
+            if (resourceTimer >= resourceGatherSpeed)
+            {
+                resourceTimer = 0.0f;
+                if (resourceAmounts[resourceTypes] < maxResource)
+                {
+                    if (resource.currentResource <= resourceGain)
+                    {
+                        resourceAmounts[resourceTypes] += resource.currentResource;
+                        resource.currentResource = 0;
+                    }
+                    else
+                    {
+                        resourceAmounts[resourceTypes] += resourceGain;
+                        resource.currentResource -= resourceGain;
+                    }
+                    UpdateInfoText();
+                    print("düzeltilmeli");
+
+                }
+            }
         }
     }
 
-    private void UpdateResourceText()
+    private void Update()
     {
-        resourceText.text = "Resource: " + resource + "/" + maxResource;
+        if (Input.GetKey(KeyCode.E))
+        {
+            GatherResource();
+        }
     }
 
     public void ResetResource()
     {
-        resource = 0;
-        isFull = false;
-        UpdateResourceText();
+        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+        {
+            resourceAmounts[resource] = 0;
+        }
+        UpdateInfoText();
     }
 
-    public void SetMaxResource(int newMaxResource)
+    public int GetResourceAmount(ResourceTypes.Resources resource)
     {
-        maxResource = newMaxResource;
-        UpdateResourceText();
+        return resourceAmounts[resource];
     }
 
-    public void SetResourceGain(int newResourceGain)
+    public void SOData(PlayerData data)
     {
-        resourceGain = newResourceGain;
+        maxResource *= data.maxResourceMultiplier;
+        resourceGain *= data.resourceGainMultiplier;
+        resourceGatherSpeed /= data.resourceGatherSpeedMultiplier;
     }
-
-    
 }

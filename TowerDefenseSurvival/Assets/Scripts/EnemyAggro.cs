@@ -11,6 +11,12 @@ public class EnemyAggro : MonoBehaviour
     public bool isAggro = false;
     public Transform target;
     public EnemyNAV enemyNAV;
+    private Transform player;
+
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
 
     private void Update()
     {
@@ -24,41 +30,33 @@ public class EnemyAggro : MonoBehaviour
                 enemyNAV.SetTarget(null);
             }
         }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
+        else
         {
-            if (isAggro)
-            {
-                return;
-            }
-            Vector3 direction = other.transform.position - transform.position;
-            float angle = Vector3.Angle(direction, transform.forward);
-            if (direction.magnitude <= aggroRange && angle <= aggroAngle)
-            {
-                isAggro = true;
-                target = other.transform;
-                enemyNAV.SetTarget(target);
-            }
+            CheckForAggro();
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void CheckForAggro()
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (player == null) return;
+
+        Vector3 direction = player.position - transform.position;
+        float angle = Vector3.Angle(direction, transform.forward);
+        if (direction.magnitude <= aggroRange && angle <= aggroAngle)
         {
-            isAggro = false;
-            aggroTimer = 0.0f;
-            enemyNAV.SetTarget(null);
+            isAggro = true;
+            target = player;
+            enemyNAV.SetTarget(target);
         }
     }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, aggroRange);
         Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * aggroRange);
+        Gizmos.color = Color.green;
         Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, aggroAngle, 0) * transform.forward * aggroRange);
         Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, -aggroAngle, 0) * transform.forward * aggroRange);
     }

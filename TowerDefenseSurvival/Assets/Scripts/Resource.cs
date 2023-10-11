@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//this script will be attached to the resource object, and will be used to determine how much resource the player will gain when they gather it
 
 public class Resource : MonoBehaviour
 {
@@ -13,6 +12,8 @@ public class Resource : MonoBehaviour
 
     public ResourceData resourceData;
 
+    public ResourceTypes.Resources resourceTypes;
+
     public void Start()
     {
         SOData(resourceData);
@@ -22,23 +23,30 @@ public class Resource : MonoBehaviour
     {
         if (currentResource <= 0)
         {
+            ResourceGenerator.currentResourcesForDay--;
             Destroy(gameObject);
         }
     }
 
-    public void GatherResource()
+    public int GatherResource(int amount)
     {
-        currentResource -= resourceGain;
-    }
-
-    public void GatherResource(int amount)
-    {
-        currentResource -= amount;
+        if (currentResource >= amount)
+        {
+            currentResource -= amount;
+            return amount;
+        }
+        else
+        {
+            int temp = currentResource;
+            currentResource = 0;
+            return temp;
+        }
     }
 
     public void SOData(ResourceData data)
     {
         maxResource = resourceData.resourceMaxAmount;
         currentResource = resourceData.resourceAmount;
+        resourceTypes = resourceData.resourceTypes;
     }
 }

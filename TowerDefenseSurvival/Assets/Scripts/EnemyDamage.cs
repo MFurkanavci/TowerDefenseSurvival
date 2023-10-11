@@ -6,31 +6,6 @@ public class EnemyDamage : MonoBehaviour
 {
     public int health = 100;
     public GameObject deathEffect;
-    public GameObject player;
-    public GameObject enemy;
-    public GameObject enemyBullet;
-    public GameObject enemyBulletSpawn;
-    public float bulletSpeed = 30.0f;
-    public float bulletLife = 3.0f;
-    public float fireRate = 0.5f;
-
-    private float nextFire = 0.0f;
-
-    private void Update()
-    {
-        if (Time.time > nextFire)
-        {
-            nextFire = Time.time + fireRate;
-            //Fire();
-        }
-    }
-
-    private void Fire()
-    {
-        GameObject bullet = Instantiate(enemyBullet, enemyBulletSpawn.transform.position, enemyBulletSpawn.transform.rotation);
-        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * bulletSpeed;
-        Destroy(bullet, bulletLife);
-    }
 
     public void TakeDamage(int damage)
     {
@@ -49,7 +24,9 @@ public class EnemyDamage : MonoBehaviour
     {
         if (other.gameObject.CompareTag("PlayerBullet"))
         {
-            TakeDamage(25);
+            TakeDamage(other.gameObject.GetComponent<Bullet>().damage);
+            other.gameObject.GetComponent<Bullet>().DestroyBullet();
         }
+        
     }
 }

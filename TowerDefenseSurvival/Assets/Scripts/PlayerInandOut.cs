@@ -22,16 +22,15 @@ public class PlayerInandOut : MonoBehaviour
     {
         if (isInTrigger)
         {
-            int resource = player.GetComponent<ResourceGathering>().resource;
             if (isInside)
             {
-                infoText.text = "Press E to go outside";
+                infoText.text = "Press \"Space\" to go outside";
             }
             else
             {
-                infoText.text = "Press \"E\" to go inside\nPress \"Q\" to bank resources";
+                infoText.text = "Press \"Space\" to go inside\nPress \"Q\" to bank resources";
             }
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (isInside)
                 {
@@ -52,7 +51,10 @@ public class PlayerInandOut : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
-                towerResources.ModifyResource(TowerResources.ResourceType.Wood, resource, true);
+                foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+                {
+                    towerResources.ModifyResource(resource, player.GetComponent<ResourceGathering>().GetResourceAmount(resource));
+                }
                 player.GetComponent<ResourceGathering>().ResetResource();
             }
         }
@@ -79,7 +81,6 @@ public class PlayerInandOut : MonoBehaviour
 
     public void CameraControls()
     {
-        //we need to adjust few thing for camera, first we need to chanege the camera follow and lookat to the player or the tower and change the fov,and follow offsets
 
         float insideCameraFOV = 90f;
         float outsideCameraFOV = 60f;

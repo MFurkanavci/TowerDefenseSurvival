@@ -18,6 +18,8 @@ public class DayNightCircle : MonoBehaviour
     enum TimeOfDay { Day, Night, Dusk, Dawn };
     TimeOfDay tod = TimeOfDay.Day;
 
+    public ResourceGenerator resourceGenerator;
+
     public Light sun;
     
     public Color dayColor;
@@ -66,6 +68,7 @@ public class DayNightCircle : MonoBehaviour
         {
             if (currentTime >= dawnLength)
             {
+                resourceGenerator.GenerateResources();
                 currentTime = 0f;
                 tod = TimeOfDay.Day;
             }

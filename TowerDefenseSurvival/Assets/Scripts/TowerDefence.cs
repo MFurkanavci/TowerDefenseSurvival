@@ -4,73 +4,95 @@ using UnityEngine;
 
 public class TowerDefence : MonoBehaviour
 {
-    public Transform target; // The current target (enemy) to shoot at
-    public float range = 10f; // The range within which the turret can detect and shoot enemies
-    public float fireRate; // Rate of fire (shots per second)
-    private float fireCountdown = 0f; // Countdown timer for shooting
-    public float bulletSpeed; // Speed of the bullet
-    public float rotationSpeed; // Speed of turret rotation
-
-    public Transform rotationPart; // The part of the turret that rotates to aim at the target
-    public GameObject bulletPrefab; // The bullet prefab to instantiate
-    public Transform bulletSpawnPoint; // The position where bullets are spawned
-
     public TurretData turretData;
+
+    private Transform target;
+    private float fireCountdown = 0f;
+
+    [Header("Turret Settings")]
+    public float range = 10f;
+    public float fireRate = 1f;
+    public float bulletSpeed = 50f;
+    public float rotationSpeed = 5.0f;
+
+    [Header("Turret Components")]
+    public Transform rotationPart;
+    public GameObject bulletPrefab;
+    public Transform bulletSpawnPoint;
+
+    [Header("Turret Settings")]
+    public int targetPriority = 0;
+
+    enum TargetPriority
+    {
+        First,
+        Last,
+        Strongest,
+        Weakest
+    }
 
     void Start()
     {
-        // Set the fire countdown to zero so that the turret shoots immediately
-        fireCountdown = 0f;
-        SOData(turretData);
+        InitializeTurret();
     }
 
     void Update()
     {
-        FindTarget(); // Find the nearest target within range
+        FindTargetByPriority();
 
         if (target != null)
         {
-            // Rotate the turret to aim at the target
             RotateTurret();
 
-            // Check if it's time to shoot
             if (fireCountdown <= 0f)
             {
-                Shoot(); // Fire a bullet at the target
-                fireCountdown = 1f / fireRate; // Reset the fire countdown
+                Shoot();
+                fireCountdown = 1f / fireRate;
             }
 
-            // Decrement the fire countdown
             fireCountdown -= Time.deltaTime;
         }
     }
 
-    void FindTarget()
+    void FindTargetByPriority()
     {
-        // Find all enemies in the scene (you might want to optimize this later)
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        float shortestDistance = Mathf.Infinity;
-        Transform nearestEnemy = null;
+        List<Transform> validTargets = new List<Transform>();
 
         foreach (GameObject enemy in enemies)
         {
             float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distanceToEnemy < shortestDistance)
+            if (distanceToEnemy <= range)
             {
-                shortestDistance = distanceToEnemy;
-                nearestEnemy = enemy.transform;
+                validTargets.Add(enemy.transform);
             }
         }
-
-        // Check if the nearest enemy is within range
-        if (nearestEnemy != null && shortestDistance <= range)
+        if (validTargets.Count > 0)
         {
-            target = nearestEnemy;
+            validTargets.Sort((a, b) => CompareTargets(a, b));
+            target = validTargets[0];
         }
         else
         {
-            target = null; // No target within range
+            target = null;
+        }
+    }
+
+    int CompareTargets(Transform a, Transform b)
+    {
+        switch ((TargetPriority)targetPriority)
+        {
+            case TargetPriority.First:
+                return 0;
+            case TargetPriority.Last:
+                return 1;
+            case TargetPriority.Strongest:
+                return a.GetComponent<EnemyDamage>().health.CompareTo(b.GetComponent<EnemyDamage>().health);
+            case TargetPriority.Weakest:
+                return b.GetComponent<EnemyDamage>().health.CompareTo(a.GetComponent<EnemyDamage>().health);
+            default:
+                return 0;
         }
     }
 
@@ -78,45 +100,50 @@ public class TowerDefence : MonoBehaviour
     {
         if (target != null)
         {
-            // Calculate the direction to the target
             Vector3 direction = target.position - transform.position;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
-
-            // Smoothly rotate the turret towards the target
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
         }
     }
 
     void Shoot()
     {
-        // Create a bullet at the bullet spawn point
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        bullet.GetComponent<Bullet>().SOData(turretData);
 
-        
         Vector3 shootingDirection = bulletSpawnPoint.forward;
-
-        // Apply the velocity
         bullet.GetComponent<Rigidbody>().velocity = shootingDirection * bulletSpeed;
 
-        // Destroy the bullet after a set time
         Destroy(bullet, 3f);
-
     }
 
-    // Draw a wire sphere to show the range of the turret
+    void InitializeTurret()
+    {
+        Vector3 position = new Vector3(transform.position.x, transform.position.y, transform.position.z + 2.5f);
+        var turret = Instantiate(turretData.turretPrefab, position, transform.rotation, transform);
+        SetTurret(turretData);
+    }
+
+    public void SetTurret(TurretData data)
+    {
+        turretData = data;
+        range = data.range;
+        fireRate = data.fireRate;
+        bulletSpeed = data.bulletSpeed;
+        rotationSpeed = data.rotationSpeed;
+        bulletPrefab = data.bulletPrefab;
+        bulletSpawnPoint = transform.GetChild(0).GetChild(1);
+    }
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);
     }
 
-    public void SOData(TurretData turretData)
+    void ReplaceTurret()
     {
-        range = turretData.range;
-        fireRate = turretData.fireRate;
-        bulletSpeed = turretData.bulletSpeed;
-        rotationSpeed = turretData.rotationSpeed;
-        bulletPrefab = turretData.bulletPrefab;
-        bulletSpawnPoint = gameObject.transform.GetChild(0);
+        Destroy(transform.GetChild(0).gameObject);
+        InitializeTurret();
     }
 }

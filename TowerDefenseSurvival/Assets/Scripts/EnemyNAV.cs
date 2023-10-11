@@ -29,12 +29,7 @@ public class EnemyNAV : MonoBehaviour
             agent.SetDestination(target.position);
         }
     }
-
-    private void destionationReached()
-    {
-        Debug.Log("Destination Reached");
-    }
-
+    
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;

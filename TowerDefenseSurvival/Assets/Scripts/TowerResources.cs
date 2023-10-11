@@ -5,13 +5,7 @@ using TMPro;
 
 public class TowerResources : MonoBehaviour
 {
-    public enum ResourceType
-    {
-        Wood,
-        Stone,
-        Iron,
-        Gold
-    }
+    ResourceTypes.Resources resourceTypes;
     public int Wood { get; private set; }
     public int Stone { get; private set; }
     public int Iron { get; private set; }
@@ -54,23 +48,21 @@ public class TowerResources : MonoBehaviour
         }
     }
 
-    public void ModifyResource(ResourceType type, int amount, bool add)
+    public void ModifyResource(ResourceTypes.Resources resource, int amount)
     {
-        switch (type)
+        switch (resource)
         {
-            case ResourceType.Wood:
-               Wood = add ? Wood + amount : Wood - amount;
+            case ResourceTypes.Resources.Wood:
+                Wood += amount;
                 break;
-            case ResourceType.Stone:
-                Stone = add ? Stone + amount : Stone - amount;
+            case ResourceTypes.Resources.Stone:
+                Stone += amount;
                 break;
-            case ResourceType.Iron:
-                Iron = add ? Iron + amount : Iron - amount;
+            case ResourceTypes.Resources.Food:
+                Iron += amount;
                 break;
-            case ResourceType.Gold:
-                Gold = add ? Gold + amount : Gold - amount;
-                break;
-            default:
+            case ResourceTypes.Resources.Gold:
+                Gold += amount;
                 break;
         }
         UpdateResources();

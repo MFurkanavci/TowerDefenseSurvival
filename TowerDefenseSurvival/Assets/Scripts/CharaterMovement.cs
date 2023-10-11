@@ -10,7 +10,6 @@ public class CharaterMovement : MonoBehaviour
     GameObject model;
 
     CharacterController controller;
-    Vector3 velocity;
     
     void Start()
     {

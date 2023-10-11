@@ -11,4 +11,5 @@ public class TurretData : ScriptableObject
     public float rotationSpeed;
     public GameObject bulletPrefab;
     public Transform bulletSpawnPoint;
+    public GameObject turretPrefab;
 }
