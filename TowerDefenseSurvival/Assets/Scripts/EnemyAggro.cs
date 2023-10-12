@@ -7,33 +7,43 @@ public class EnemyAggro : MonoBehaviour
     public float aggroRange = 10.0f;
     public float aggroAngle = 45.0f;
     public float aggroTime = 5.0f;
-    public float aggroTimer = 0.0f;
     public Vector3 aggroStopDistance;
-    public bool isAggro = false;
     public Transform target;
     public EnemyNAV enemyNAV;
+
     private Transform player;
+    private float aggroTimer = 0.0f;
+    private bool isAggro = false;
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        Player playerComponent = FindObjectOfType<Player>();
+        if (playerComponent != null)
+        {
+            player = playerComponent.playerTransform;
+        }
     }
 
     private void Update()
     {
-        if (isAggro)
+        if (!isAggro)
         {
-            aggroTimer += Time.deltaTime;
-            if (aggroTimer >= aggroTime)
-            {
-                isAggro = false;
-                aggroTimer = 0.0f;
-                enemyNAV.SetTarget(null);
-            }
+            CheckForAggro();
         }
         else
         {
-            CheckForAggro();
+            HandleAggroTimer();
+        }
+    }
+
+    private void HandleAggroTimer()
+    {
+        aggroTimer += Time.deltaTime;
+        if (aggroTimer >= aggroTime)
+        {
+            isAggro = false;
+            aggroTimer = 0.0f;
+            enemyNAV.SetTarget(null);
         }
     }
 
@@ -51,6 +61,4 @@ public class EnemyAggro : MonoBehaviour
             print("fix");
         }
     }
-
-    
 }
