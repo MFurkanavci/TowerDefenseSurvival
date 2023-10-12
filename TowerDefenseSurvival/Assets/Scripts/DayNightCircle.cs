@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DayNightCircle : MonoBehaviour
+public class DayNightCycle : MonoBehaviour
 {
-    //make a day night cycle with dusk and dawn in between 
-
     public float dayLength = 120f;
     public float nightLength = 120f;
     public float duskLength = 10f;
@@ -15,101 +13,91 @@ public class DayNightCircle : MonoBehaviour
     public float currentTime = 0f;
     public float timeMultiplier = 1f;
 
-    enum TimeOfDay { Day, Night, Dusk, Dawn };
-    TimeOfDay tod = TimeOfDay.Day;
-
-    public ResourceGenerator resourceGenerator;
-
     public Light sun;
-    
+
     public Color dayColor;
     public Color nightColor;
     public Color duskColor;
     public Color dawnColor;
 
+    private Color targetColor;
+    private float targetTime;
+    private IEnumerator dayNightCoroutine;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        currentTime = 0f;
         sun.color = dayColor;
+        StartDayNightCycle();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void StartDayNightCycle()
     {
-        currentTime += Time.deltaTime * timeMultiplier;
+        dayNightCoroutine = DayNightCycleCoroutine();
+        StartCoroutine(dayNightCoroutine);
+    }
 
-        if (tod == TimeOfDay.Day)
+    private IEnumerator DayNightCycleCoroutine()
+    {
+        while (true)
         {
-            if (currentTime >= dayLength)
-            {
-                currentTime = 0f;
-                tod = TimeOfDay.Dusk;
-            }
+            yield return LerpColor(sun.color, targetColor, targetTime);
+            SwitchToNextTimeOfDay();
         }
-        else if (tod == TimeOfDay.Dusk)
-        {
-            if (currentTime >= duskLength)
-            {
-                currentTime = 0f;
-                tod = TimeOfDay.Night;
-            }
-        }
-        else if (tod == TimeOfDay.Night)
-        {
-            if (currentTime >= nightLength)
-            {
-                currentTime = 0f;
-                tod = TimeOfDay.Dawn;
-            }
-        }
-        else if (tod == TimeOfDay.Dawn)
-        {
-            if (currentTime >= dawnLength)
-            {
-                resourceGenerator.GenerateResources();
-                currentTime = 0f;
-                tod = TimeOfDay.Day;
-            }
-        }
+    }
 
-        if (tod == TimeOfDay.Day)
+    private IEnumerator LerpColor(Color startColor, Color endColor, float duration)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
         {
-            sun.color = Color.Lerp(dayColor, duskColor, currentTime / dayLength);
+            sun.color = Color.Lerp(startColor, endColor, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
         }
-        else if (tod == TimeOfDay.Dusk)
+        sun.color = endColor;
+    }
+
+    private void SwitchToNextTimeOfDay()
+    {
+        if (targetColor == dayColor)
         {
-            sun.color = Color.Lerp(duskColor, nightColor, currentTime / duskLength);
+            targetColor = duskColor;
+            targetTime = duskLength;
         }
-        else if (tod == TimeOfDay.Night)
+        else if (targetColor == duskColor)
         {
-            sun.color = Color.Lerp(nightColor, dawnColor, currentTime / nightLength);
+            targetColor = nightColor;
+            targetTime = nightLength;
         }
-        else if (tod == TimeOfDay.Dawn)
+        else if (targetColor == nightColor)
         {
-            sun.color = Color.Lerp(dawnColor, dayColor, currentTime / dawnLength);
+            targetColor = dawnColor;
+            targetTime = dawnLength;
+        }
+        else
+        {
+            targetColor = dayColor;
+            targetTime = dayLength;
         }
     }
 
     public bool IsNight()
     {
-        return tod == TimeOfDay.Night;
+        return targetColor == nightColor;
     }
 
     public bool IsDay()
     {
-        return tod == TimeOfDay.Day;
+        return targetColor == dayColor;
     }
 
     public bool IsDusk()
     {
-        return tod == TimeOfDay.Dusk;
+        return targetColor == duskColor;
     }
 
     public bool IsDawn()
     {
-        return tod == TimeOfDay.Dawn;
+        return targetColor == dawnColor;
     }
-
 }
