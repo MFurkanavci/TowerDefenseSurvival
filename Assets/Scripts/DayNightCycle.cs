@@ -81,6 +81,16 @@ public class DayNightCycle : MonoBehaviour
         }
     }
 
+
+        /*day: #87CEEB (Sky Blue) .
+
+        Night: #000033 (Midnight Blue) -
+
+        Dusk: #FFA500 (Orange)
+
+        Dawn: #FFC0CB  */
+        
+        
     public bool IsNight()
     {
         return targetColor == nightColor;
