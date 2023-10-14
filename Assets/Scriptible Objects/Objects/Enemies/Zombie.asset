@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Zombie
   m_EditorClassIdentifier: 
   enemyName: Zombie
-  health: 999
+  health: 15
   damage: 3
   speed: 3
   attackRange: 5
   attackRate: 1
+  experienceDrop: 30
+  soulDrop: 10
+  enemyPrefab: {fileID: 0}

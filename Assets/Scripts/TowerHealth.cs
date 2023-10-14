@@ -31,18 +31,10 @@ public class TowerHealth : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("EnemyBullet"))
+        if (other.TryGetComponent<EnemyDamage>(out EnemyDamage enemyDamage))
         {
-            TakeDamage(25);
-        }
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            if(other.transform.root.CompareTag("EnemyAggro"))
-            {
-                return;
-            }
-            other.gameObject.GetComponent<EnemyDamage>().Die();
-            TakeDamage(10);
+            TakeDamage(enemyDamage.enemyData.damage);
+            other.gameObject.SetActive(false);
         }
     }
 }

@@ -33,7 +33,7 @@ public class TowerDefence : MonoBehaviour
 
     void Start()
     {
-        InitializeTurret();
+        //InitializeTurret();
     }
 
     void Update()

@@ -18,5 +18,5 @@ MonoBehaviour:
   resourceMaxAmountPerDay: 0
   resourceRegenRate: 0
   resourceWeight: 0
-  resourceQuality: 15
-  resourcePrefab: {fileID: 3904598646383382824, guid: 433a0c46f97af2f4d9b3fc2bd9cef895, type: 3}
+  resourceQuality: 25
+  resourceMaterial: {fileID: 2100000, guid: 019c910d317f08549951cebca00b3aae, type: 2}

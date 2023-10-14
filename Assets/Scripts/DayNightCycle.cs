@@ -10,9 +10,6 @@ public class DayNightCycle : MonoBehaviour
     public float duskLength = 10f;
     public float dawnLength = 10f;
 
-    public float currentTime = 0f;
-    public float timeMultiplier = 1f;
-
     public Light sun;
 
     public Color dayColor;
@@ -24,9 +21,16 @@ public class DayNightCycle : MonoBehaviour
     private float targetTime;
     private IEnumerator dayNightCoroutine;
 
+    public static event Action OnNight;
+    public static event Action OnDay;
+
+    public static DayNightCycle Instance { get; private set; }
+
     private void Start()
-    {
-        sun.color = dayColor;
+    {  
+        Instance = this;
+        targetColor = dayColor;
+        targetTime = dayLength;
         StartDayNightCycle();
     }
 
@@ -63,6 +67,7 @@ public class DayNightCycle : MonoBehaviour
         {
             targetColor = duskColor;
             targetTime = duskLength;
+            OnNight?.Invoke();
         }
         else if (targetColor == duskColor)
         {
@@ -73,8 +78,9 @@ public class DayNightCycle : MonoBehaviour
         {
             targetColor = dawnColor;
             targetTime = dawnLength;
+            OnDay?.Invoke();
         }
-        else
+        else if (targetColor == dawnColor)
         {
             targetColor = dayColor;
             targetTime = dayLength;

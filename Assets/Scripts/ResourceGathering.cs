@@ -55,14 +55,14 @@ public class ResourceGathering : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Resource"))
+        if (other.TryGetComponent<Resource>(out Resource resource))
         {
             isInRange = true;
-            string resourceWeight = Math.Round(other.GetComponent<Resource>().currentResource, 2).ToString();
-            string resourceType = other.GetComponent<Resource>().resourceData.resourceTypes.ToString();
+            string resourceWeight = Math.Round(resource.currentResource, 2).ToString();
+            string resourceType = resource.resourceData.resourceTypes.ToString();
             materialInfoText.text = $"{resourceWeight} kg. of {resourceType}";
-            resourceTypes = other.GetComponent<Resource>().resourceData.resourceTypes;
-            resource = other.GetComponent<Resource>();
+            resourceTypes = resource.resourceData.resourceTypes;
+            this.resource = resource;
 
             if (resource.currentResource > resourceGain)
             {
@@ -78,9 +78,11 @@ public class ResourceGathering : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Resource"))
+        if (other.TryGetComponent<Resource>(out Resource resource))
         {
             isInRange = false;
+            resourceTimer = 0.0f;
+            resource = null;
             materialInfoText.text = "";
             keyInfoText.text = "";
         }
@@ -88,7 +90,7 @@ public class ResourceGathering : MonoBehaviour
 
     private void GatherResource()
     {
-        if (isInRange && resource != null)
+        if (isInRange && resource != null && !resource.IsEmpty())
         {
             resourceTimer += Time.deltaTime;
             if (resourceTimer >= resourceGatherSpeed)
@@ -107,6 +109,7 @@ public class ResourceGathering : MonoBehaviour
                 resource.SetScale();
                 UpdateInfoText();
             }
+            resource.DeactivateResource();
         }
     }
 

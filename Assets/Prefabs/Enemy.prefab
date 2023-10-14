@@ -47,8 +47,7 @@ MonoBehaviour:
   aggroRange: 10
   aggroAngle: 45
   aggroTime: 5
-  aggroTimer: 0
-  isAggro: 0
+  aggroStopDistance: {x: 0, y: 0, z: 0}
   target: {fileID: 0}
   enemyNAV: {fileID: 1278121528}
 --- !u!1 &756615047807308499
@@ -138,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   mainTarget: {fileID: 0}
+  agent: {fileID: 0}
 --- !u!114 &-1839761800380884773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,6 +153,8 @@ MonoBehaviour:
   health: 100
   enemyData: {fileID: 11400000, guid: cb9c473e889ed994195d1656bb3da361, type: 2}
   deathEffect: {fileID: 701911390358255885, guid: 516d0a21f760e6d4ca8745e159f0ddbe, type: 3}
+  isPlayerInRange: 0
+  experience: {fileID: 6498983365843201049, guid: f091285311676424ea50a46c31ceaf65, type: 3}
 --- !u!54 &1452034698648968519
 Rigidbody:
   m_ObjectHideFlags: 0

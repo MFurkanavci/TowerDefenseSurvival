@@ -5,59 +5,91 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
-    public GameObject mainTarget;
-    public float spawnRate = 1.0f;
+    public int poolSize = 10;
     public float spawnRadius = 10.0f;
-    public float spawnTimer = 0.0f;
-    public int maxEnemies = 10;
-    public int enemyCount = 0;
+    public GameObject mainTarget;
 
-    public List<GameObject> enemies = new List<GameObject>();
+    public GameObject enemyDeathEffect;
 
-    public DayNightCycle dayNightCycle;
+    private List<GameObject> enemyPool = new List<GameObject>();
+    private int enemyIndex = 0;
 
-    private void Update()
+    public float spawnRate = 1.0f;
+
+    void OnEnable()
     {
-        if (dayNightCycle.IsNight())
+        DayNightCycle.OnNight += HandleNight;
+        DayNightCycle.OnDay += HandleDay;
+    }
+
+    void OnDisable()
+    {
+        DayNightCycle.OnNight -= HandleNight;
+        DayNightCycle.OnDay -= HandleDay;
+    }
+
+    private void HandleNight()
+    {
+        StartCoroutine(SpawnEnemiesOnTimer());
+    }
+
+    private void HandleDay()
+    {
+        StopAllCoroutines();
+        KillAllEnemies();
+    }
+
+    private IEnumerator SpawnEnemiesOnTimer()
+    {
+        while (true)
         {
-            spawnTimer += Time.deltaTime;
-            if (spawnTimer > spawnRate && enemyCount < maxEnemies)
-            {
-                SpawnEnemy();
-                spawnTimer = 0.0f;
-            }
-        }
-        else if (dayNightCycle.IsDay())
-        {
-            foreach (GameObject enemy in enemies)
-            {
-                if (enemy == null)
-                {
-                    continue;
-                }
-                enemy.GetComponent<EnemyDamage>().Die();
-            }
-            enemies.Clear();
-            enemyCount = 0;
+            yield return new WaitForSeconds(spawnRate);
+            SpawnEnemy();
         }
     }
 
+    private void Start()
+    {
+        for (int i = 0; i < poolSize; i++)
+        {
+            Vector3 spawnPosition = transform.position + Random.insideUnitSphere * spawnRadius;
+            spawnPosition.y = 0.0f;
+            GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+            enemy.GetComponent<EnemyNAV>().target = mainTarget.transform;
+            enemy.GetComponent<EnemyNAV>().SetMainTarget(mainTarget.transform);
+            enemy.SetActive(false);
+            enemyPool.Add(enemy);
+            enemy.GetComponent<EnemyDamage>().effect = enemyDeathEffect;
+            enemy.transform.SetParent(transform);
+        }
+    }
     private void SpawnEnemy()
     {
-        Vector3 spawnPosition = transform.position + Random.insideUnitSphere * spawnRadius;
-        spawnPosition.y = 0.0f;
-        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        GameObject enemy = enemyPool[enemyIndex];
+        enemy.SetActive(true);
+        enemy.transform.position = transform.position + Random.insideUnitSphere * spawnRadius;
         enemy.GetComponent<EnemyNAV>().target = mainTarget.transform;
-        enemies.Add(enemy);
-        enemyCount++;
+        enemy.GetComponent<EnemyNAV>().SetMainTarget(mainTarget.transform);
+        enemyIndex = (enemyIndex + 1) % poolSize;
+    }
+
+    private void KillAllEnemies()
+    {
+        foreach (GameObject enemy in enemyPool)
+        {
+            if (enemy.activeSelf)
+            {
+                enemy.GetComponent<EnemyDamage>().Die();
+                enemy.SetActive(false);
+            }
+        }
     }
 
     public void RemoveEnemy(GameObject enemy)
     {
-        
         enemy.GetComponent<EnemyDamage>().Die();
-        enemies.Remove(enemy);
-        enemyCount--;
+        enemy.SetActive(false);
     }
 
+    
 }

@@ -20,6 +20,11 @@ public class EnemyDamage : MonoBehaviour
 
     public bool isPlayerInRange;
 
+    public GameObject effect;
+
+    [SerializeField]
+    private GameObject experience;
+
     public void TakeDamage(int damage)
     {
         health -= damage;
@@ -30,15 +35,29 @@ public class EnemyDamage : MonoBehaviour
     }
     public void Die()
     {
-        Instantiate(deathEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        var effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
+        effect.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        effect.transform.rotation = Quaternion.Euler(-90, 0, 0);
+        effect.transform.SetParent(this.effect.transform);
+        DropExperience();
+        gameObject.SetActive(false);
+        health = enemyData.health;
+    }
+    public void DropExperience()
+    {
+        GameObject experience = Instantiate(this.experience, transform.position, Quaternion.identity);
+        experience.GetComponent<Experience>().experience = enemyData.experienceDrop;
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("PlayerBullet"))
+        if (other.TryGetComponent<Bullet>(out Bullet bullet))
         {
-            TakeDamage(other.gameObject.GetComponent<Bullet>().damage);
-            other.gameObject.GetComponent<Bullet>().DestroyBullet();
+            TakeDamage(bullet.damage);
+            Destroy(bullet.gameObject);
+        }
+        if (other.TryGetComponent<Player>(out Player player))
+        {
+            player.health -= enemyData.damage;
         }
     }
 

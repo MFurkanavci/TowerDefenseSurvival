@@ -19,12 +19,19 @@ public class Resource : MonoBehaviour
         SOData(resourceData);
     }
 
-    public void Update()
+    public bool IsEmpty()
     {
-        if (currentResource < 0.1f)
+        return currentResource < 0.1f;
+    }
+
+    public void DeactivateResource()
+    {
+        if (IsEmpty())
         {
-            ResourceGenerator.currentResourcesForDay--;
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            
+            ResourceGenerator.instance.ReSpawnResource(gameObject);
+            ResourceGenerator.instance.RemoveAResource();
         }
     }
 

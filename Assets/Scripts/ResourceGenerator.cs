@@ -2,63 +2,82 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System;
 
 public class ResourceGenerator : MonoBehaviour
 {
-    [SerializeField] private List<ResourceData> resources;
-    [SerializeField] private float resourceSpawnRadius;
-    [SerializeField] private int maxResourcesForDay = 100;
+    public GameObject resourcePrefab;
+    public int poolSize = 10;
+    public float resourceSpawnRadius = 10.0f;
+    public ResourceData[] resources;
 
-    public static int currentResourcesForDay;
-    private WaitForSeconds spawnDelay = new WaitForSeconds(0.1f);
+    private List<GameObject> resourcePool = new List<GameObject>();
+    private int resourceIndex = 0;
+    private int currentResourcesForDay = 0;
 
-    private void Start()
+    public void RemoveAResource()
     {
-        GenerateResources();
-    }
+        currentResourcesForDay--;
 
-    public int NeededResourcesPerDay()
-    {
-        return maxResourcesForDay - currentResourcesForDay;
-    }
-
-    public void GenerateResources()
-    {
-        StartCoroutine(GenerateResourcesCoroutine());
-    }
-
-    private IEnumerator GenerateResourcesCoroutine()
-    {
-        int resourcesToGenerate = NeededResourcesPerDay();
-        for (int i = 0; i < resourcesToGenerate; i++)
+        if (currentResourcesForDay <= 0)
         {
-            GenerateResource();
-            yield return spawnDelay;
+            SpawnAllResources();
         }
     }
 
-    private void GenerateResource()
-    {
-        ResourceData resource = GetRandomResource();
-        if (resource == null) return; // Check if there are no valid resources
+    public static ResourceGenerator instance;
 
-        Vector3 randomPosition = GetRandomPosition();
-        GameObject resourceObject = Instantiate(resource.resourcePrefab, randomPosition, Quaternion.identity);
-        resourceObject.GetComponent<Resource>().resourceData = resource;
-        resourceObject.transform.SetParent(transform);
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    private void Start()
+    {
+        for (int i = 0; i < poolSize; i++)
+        {
+            Vector3 spawnPosition = GetRandomPosition();
+            GameObject resource = Instantiate(resourcePrefab, spawnPosition, Quaternion.identity);
+            resource.transform.SetParent(transform);
+            resource.SetActive(false);
+            resourcePool.Add(resource);
+        }
+
+        SpawnAllResources();
+    }
+
+    private void SpawnResource()
+    {
+        GameObject resource = resourcePool[resourceIndex];
+        resource.SetActive(true);
+        resource.transform.position = GetRandomPosition();
+        resource.GetComponent<Resource>().resourceData = GetRandomResource();
+        resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
+        resourceIndex = (resourceIndex + 1) % poolSize;
+        currentResourcesForDay++;
+    }
+
+    public void ReSpawnResource(GameObject resource)
+    {
+        resource.transform.position = GetRandomPosition();
+        resource.GetComponent<Resource>().resourceData = GetRandomResource();
+        resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
+        resource.GetComponent<Resource>().SetScale();
+        resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
+        resource.SetActive(true);
         currentResourcesForDay++;
     }
 
     private Vector3 GetRandomPosition()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * resourceSpawnRadius;
+        Vector3 randomDirection = UnityEngine.Random.insideUnitSphere * resourceSpawnRadius;
         randomDirection += transform.position;
         NavMeshHit hit;
         if (NavMesh.SamplePosition(randomDirection, out hit, resourceSpawnRadius, 1))
         {
             return hit.position;
         }
-        return Vector3.zero; // Return a default position if no valid position is found
+        return Vector3.zero; 
     }
 
     private ResourceData GetRandomResource()
@@ -68,9 +87,9 @@ public class ResourceGenerator : MonoBehaviour
         {
             totalQuality += resource.resourceQuality;
         }
-        if (totalQuality <= 0) return null; // No valid resources to choose from
+        if (totalQuality <= 0) return null; 
 
-        int randomQuality = Random.Range(0, totalQuality);
+        int randomQuality = UnityEngine.Random.Range(0, totalQuality);
         int currentQuality = 0;
         foreach (ResourceData resource in resources)
         {
@@ -80,11 +99,22 @@ public class ResourceGenerator : MonoBehaviour
                 return resource;
             }
         }
-        return null; // Return null if no resource is selected (shouldn't happen)
+        return null; 
     }
 
     public void ResetResourcesForDay()
     {
         currentResourcesForDay = 0;
+    }
+
+    public void SpawnAllResources()
+    {
+        foreach (GameObject resource in resourcePool)
+        {
+            if (!resource.activeSelf)
+            {
+                SpawnResource();
+            }
+        }
     }
 }

@@ -11,5 +11,5 @@ public class ResourceData : ScriptableObject
     public float resourceWeight;
     public int resourceQuality;
 
-    public GameObject resourcePrefab;
+    public Material resourceMaterial;
 }
