@@ -45,7 +45,7 @@ public class EnemyDamage : MonoBehaviour
     }
     public void DropExperience()
     {
-        GameObject experience = Instantiate(this.experience, transform.position, Quaternion.identity);
+        GameObject experience = Instantiate(this.experience, transform.position, Quaternion.identity,effect.transform);
         experience.GetComponent<Experience>().experience = enemyData.experienceDrop;
     }
     private void OnTriggerEnter(Collider other)

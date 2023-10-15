@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50730908408d1c844aa648387f6891cf, type: 3}
-  m_Name: AutoTurret1
+  m_Name: RPG
   m_EditorClassIdentifier: 
-  turretName: Auto Turret 1
-  damage: 10
+  turretName: RPG
+  damage: 150
   range: 50
-  fireRate: 3
-  bulletSpeed: 60
-  rotationSpeed: 7
+  fireRate: 0.2
+  bulletSpeed: 5
+  rotationSpeed: 3
   bulletPrefab: {fileID: 912246007099814282, guid: 9d745bb25591066418fea6d6038ab801, type: 3}
   bulletSpawnPoint: {fileID: 0}
   turretPrefab: {fileID: 3387561596361536064, guid: 2e76fece931200a459134b8e7ea5c408, type: 3}

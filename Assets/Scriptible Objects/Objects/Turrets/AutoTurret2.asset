@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turretName: Auto Turret 2
   damage: 50
-  range: 60
+  range: 20
   fireRate: 0.6
   bulletSpeed: 10
   rotationSpeed: 1

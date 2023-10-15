@@ -12,52 +12,63 @@ public class AddNewTowerFloor : MonoBehaviour
 
     public List<GameObject> towerFloors;
 
-    public int towerFloorCount = 0;
+    [SerializeField]
+    List<TurretData> turretDatas;
 
     public int towerFloorIndex = 0;
 
-    public int towerFloorIndexForTopFloor = 0;
+    public int maxTowerFloors = 4;
+
+    public void Start()
+    {
+        towerFloors = new List<GameObject>();
+        towerFloors.Add(towerTopFloor);
+    }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && !IsTowerFull())
         {
-            AddNewFloor();
-            RiseTower();
+            PickRandomTurretData();
         }
     }
 
-    public void AddNewFloor()
+    void PickRandomTurretData()
     {
-        towerFloorCount++;
+        int randomIndex = Random.Range(0, turretDatas.Count);
+        AddNewFloor(turretDatas[randomIndex]);
+    }
 
+    public void AddNewFloor(TurretData turretData)
+    {
+        GameObject newTowerFloor = Instantiate(towerFloorPrefab,towerFloors[towerFloorIndex].transform.position,Quaternion.identity, this.transform);
         towerFloorIndex++;
-
-        towerFloorIndexForTopFloor++;
-
-        GameObject towerFloor = Instantiate(towerFloorPrefab, towerTopFloor.transform.position, Quaternion.identity);
-
-        towerFloor.transform.SetParent(gameObject.transform);
-
-        towerFloor.transform.localPosition = new Vector3(0, -towerFloorIndex * .33f, 0);
-
-        towerFloor.transform.localScale = new Vector3(1, .33f, 1);
-
-        towerFloor.name = "Tower Floor " + towerFloorIndex;
-
-        towerTopFloor = towerFloor;
-
-        towerFloors.Add(towerFloor);
-        
+        RiseTower();
+        towerFloors.Add(newTowerFloor);
+        SetTurretData(turretData, towerFloorIndex);
+        newTowerFloor.name = "TowerFloor" + towerFloorIndex;
     }
 
     public void RiseTower()
     {
-        for (int i = 0; i < towerFloors.Count; i++)
+        foreach (GameObject towerFloor in towerFloors)
         {
-            towerFloors[i].transform.localPosition = new Vector3(0, -i * .33f, 0);
+            towerFloor.transform.localPosition = new Vector3(0, towerFloor.transform.localPosition.y + .66f, 0);
+
+            if(towerFloor.transform.GetChild(0).TryGetComponent<TowerDefence>(out TowerDefence towerDefence))
+            {
+                towerDefence.range += towerDefence.range/2f;
+            }
         }
     }
 
+    public void SetTurretData(TurretData turretData, int towerFloorIndex)
+    {
+        towerFloors[towerFloorIndex].GetComponentInChildren<TowerDefence>().InitializeTurret(turretData);
+    }
 
+    public bool IsTowerFull()
+    {
+        return towerFloors.Count >= maxTowerFloors;
+    }
 }

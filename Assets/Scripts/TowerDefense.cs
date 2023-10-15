@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TowerDefense : MonoBehaviour
+public class TowerDefence : MonoBehaviour
 {
+    [Header("Turret Settings")]
     public TurretData turretData;
 
-    private Transform target;
-    private float fireCountdown = 0f;
-
-    [Header("Turret Settings")]
     public float range = 10f;
     public float fireRate = 1f;
     public float bulletSpeed = 50f;
@@ -30,23 +26,22 @@ public class TowerDefense : MonoBehaviour
         Weakest
     }
 
-    private void Start()
-    {
-        // InitializeTurret(turretData);
-    }
+    private Transform target;
+    private float fireCountdown = 0f;
 
     private void Update()
-    {
-        FindTarget();
+{
+    FindTarget();
 
-        if (target != null)
+    if (target != null)
+    {
+        if (IsInMinRange())
+        {
+            target = null;
+        }
+        else
         {
             RotateTurret();
-
-            if (IsInMinRange())
-            {
-                return;
-            }
 
             if (fireCountdown <= 0f)
             {
@@ -57,13 +52,15 @@ public class TowerDefense : MonoBehaviour
             fireCountdown -= Time.deltaTime;
         }
     }
+}
+
 
     private bool IsInMinRange()
     {
         if (target != null)
         {
-            float angleToTarget = Vector3.Angle(rotationPart.forward, target.position - rotationPart.position);
-            return angleToTarget > 40f;
+            float angleToTarget = -CalculateAngle();
+            return angleToTarget > 20f;
         }
         return false;
     }
@@ -116,6 +113,17 @@ public class TowerDefense : MonoBehaviour
         rotationPart.rotation = Quaternion.Slerp(rotationPart.rotation, lookRotation, Time.deltaTime * rotationSpeed);
     }
 
+    private float CalculateAngle()
+    {
+        Vector3 direction = target.position - bulletSpawnPoint.position;
+        float distance = direction.magnitude;
+        float heightDifference = target.transform.position.y - bulletSpawnPoint.position.y;
+
+        float tanAngle = Mathf.Atan2(heightDifference, distance);
+
+        return tanAngle * Mathf.Rad2Deg;
+    }   
+
     private void Shoot()
     {
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
@@ -139,6 +147,7 @@ public class TowerDefense : MonoBehaviour
         rotationSpeed = data.rotationSpeed;
         bulletPrefab = data.bulletPrefab;
         bulletSpawnPoint = transform.GetChild(0).GetChild(1);
+        rotationPart = transform;
     }
 
     private void OnDrawGizmosSelected()

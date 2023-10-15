@@ -560,11 +560,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 756615047807308499, guid: 8c8048c5f81d540498bebc4a40c8e993, type: 3}
-  poolSize: 20
-  spawnRadius: 60
+  poolSize: 100
+  spawnRadius: 100
   mainTarget: {fileID: 766930449}
   enemyDeathEffect: {fileID: 1034890157}
-  spawnRate: 1
+  spawnRate: 0.3
 --- !u!4 &179563123
 Transform:
   m_ObjectHideFlags: 0
@@ -1689,9 +1689,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dayLength: 5
-  nightLength: 50
-  duskLength: 1
-  dawnLength: 1
+  nightLength: 5
+  duskLength: 5
+  dawnLength: 5
   sun: {fileID: 705507994}
   dayColor: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   nightColor: {r: 0, g: 0, b: 0.2, a: 1}
@@ -2461,11 +2461,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerFloorPrefab: {fileID: 5288090321138048509, guid: 3f821bbd65948124d9adf568bc1b28c9, type: 3}
   towerTopFloor: {fileID: 263794131}
-  towerFloors:
-  - {fileID: 263794131}
-  towerFloorCount: 1
-  towerFloorIndex: 1
-  towerFloorIndexForTopFloor: 1
+  towerFloors: []
+  turretDatas:
+  - {fileID: 11400000, guid: 13d19a16c60b2d54c8c873722079ffd3, type: 2}
+  - {fileID: 11400000, guid: 14397efbeacd96a4ba852b923af48e34, type: 2}
+  - {fileID: 11400000, guid: 68607eab482c3b647a1b89525cb1eea3, type: 2}
+  towerFloorIndex: 0
+  maxTowerFloors: 5
 --- !u!1 &795266092
 GameObject:
   m_ObjectHideFlags: 0
@@ -2665,7 +2667,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.47185794, y: 0.000000021454225, z: -0.000000011481952, w: 0.88167465}
+  m_LocalRotation: {x: 0.47185794, y: -0.000000021454229, z: 0.000000011481955, w: 0.88167465}
   m_LocalPosition: {x: 0, y: 15.5, z: -18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3636,7 +3638,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1193466726}
-  m_LocalRotation: {x: -0, y: 3.5527133e-15, z: -3.5527133e-15, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3840,7 +3842,7 @@ Canvas:
   m_RenderMode: 1
   m_Camera: {fileID: 963194227}
   m_PlaneDistance: 1
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -4016,6 +4018,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 052de8efc450ef44290825ea88795bbc, type: 2}
   - {fileID: 11400000, guid: f0cce2b0d3dc5a947a097152f7ba5e9c, type: 2}
   - {fileID: 11400000, guid: cdd42144c7ac93942a0402f0db277131, type: 2}
+  - {fileID: 11400000, guid: 0eb3f56291be2d846ac119b7d0667fc2, type: 2}
 --- !u!4 &1654795615
 Transform:
   m_ObjectHideFlags: 0
