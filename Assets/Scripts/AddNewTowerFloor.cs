@@ -55,16 +55,16 @@ public class AddNewTowerFloor : MonoBehaviour
         {
             towerFloor.transform.localPosition = new Vector3(0, towerFloor.transform.localPosition.y + .66f, 0);
 
-            if(towerFloor.transform.GetChild(0).TryGetComponent<TowerDefence>(out TowerDefence towerDefence))
+            if(towerFloor.transform.GetChild(0).TryGetComponent<AutoTurrets>(out AutoTurrets towerDefence))
             {
-                towerDefence.range += towerDefence.range/2f;
+                towerDefence.SetRange(towerDefence.GetRange() * 1.2f);
             }
         }
     }
 
     public void SetTurretData(TurretData turretData, int towerFloorIndex)
     {
-        towerFloors[towerFloorIndex].GetComponentInChildren<TowerDefence>().InitializeTurret(turretData);
+        towerFloors[towerFloorIndex].GetComponentInChildren<AutoTurrets>().InitializeTurret(turretData);
     }
 
     public bool IsTowerFull()

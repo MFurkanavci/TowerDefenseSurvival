@@ -49,7 +49,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5288090321138048509}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -93,7 +93,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5154517361737749362}
-  - component: {fileID: 71597618344100612}
+  - component: {fileID: 44718251302644652}
   m_Layer: 0
   m_Name: AutoTurretSpot
   m_TagString: Untagged
@@ -116,7 +116,7 @@ Transform:
   m_Father: {fileID: 5456976677499558764}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &71597618344100612
+--- !u!114 &44718251302644652
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -125,15 +125,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 9137268190782499494}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e6f31cb7bf25df41bf6440fe6a8dfe5, type: 3}
+  m_Script: {fileID: 11500000, guid: 87b58bac0432f32408c845a6fd5b1b76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turretData: {fileID: 0}
-  range: 10
-  fireRate: 1
-  bulletSpeed: 50
-  rotationSpeed: 5
-  rotationPart: {fileID: 0}
+  rotationPart: {fileID: 5154517361737749362}
   bulletPrefab: {fileID: 0}
   bulletSpawnPoint: {fileID: 0}
+  baseRange: 10
   targetPriority: 0
+  rotationSpeed: 5
+  fireRate: 1
+  bulletSpeed: 50
