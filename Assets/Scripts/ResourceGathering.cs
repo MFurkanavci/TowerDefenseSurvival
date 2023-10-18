@@ -59,9 +59,13 @@ public class ResourceGathering : MonoBehaviour
         {
             isInRange = true;
             string resourceWeight = Math.Round(resource.currentResource, 2).ToString();
-            string resourceType = resource.resourceData.resourceTypes.ToString();
+            string resourceType = "";
+            if(resource.resourceData != null)
+            {
+                resourceType = resource.resourceData.resourceTypes.ToString();
+            }
+
             materialInfoText.text = $"{resourceWeight} kg. of {resourceType}";
-            resourceTypes = resource.resourceData.resourceTypes;
             this.resource = resource;
 
             if (resource.currentResource > resourceGain)

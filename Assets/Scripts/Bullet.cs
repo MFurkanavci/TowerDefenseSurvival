@@ -10,4 +10,14 @@ public class Bullet : MonoBehaviour
     {
         damage = data.damage;
     }
+
+    void DestroyBullet()
+    {
+        ObjectPooler.Instance.ReturnObject(gameObject, gameObject);
+    }
+
+    private void OnEnable()
+    {
+        Invoke("DestroyBullet", 3f);
+    }
 }

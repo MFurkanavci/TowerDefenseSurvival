@@ -13,12 +13,6 @@ public class Resource : MonoBehaviour
     public ResourceData resourceData;
 
     public ResourceTypes.Resources resourceTypes;
-
-    public void Start()
-    {
-        SOData(resourceData);
-    }
-
     public bool IsEmpty()
     {
         return currentResource < 0.1f;
@@ -28,10 +22,11 @@ public class Resource : MonoBehaviour
     {
         if (IsEmpty())
         {
-            gameObject.SetActive(false);
+            gameObject.name = "Resource";
+            resourceData = null;
+            ObjectPooler.Instance.ReturnObject(gameObject,gameObject);
             
-            ResourceGenerator.instance.ReSpawnResource(gameObject);
-            ResourceGenerator.instance.RemoveAResource();
+            ResourceGenerator.currentResourcesForDay--;
         }
     }
 

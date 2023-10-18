@@ -24,6 +24,8 @@ public class AutoTurrets : MonoBehaviour
     private Transform target;
     private float fireCountdown = 0f;
 
+    private List<GameObject> validTargets = new List<GameObject>();
+
     public enum TargetPriority
     {
         Closest,
@@ -60,56 +62,56 @@ public class AutoTurrets : MonoBehaviour
     }
 
     //Get the valid targets
-    Transform GetTarget(float turretRange, float maxAngle)
+    void GetValidTargets(float turretRange, float maxAngle)
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        List<GameObject> validTargets = new List<GameObject>();
+        validTargets.Clear();
+        Collider[] colliders = Physics.OverlapSphere(transform.position, turretRange);
 
-        foreach (GameObject enemy in enemies)
+        foreach (Collider collider in colliders)
         {
-            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-
-            if (distanceToEnemy <= turretRange)
+            if (collider.CompareTag("Enemy"))
             {
-                Vector3 directionToEnemy = enemy.transform.position - transform.position;
-                float angleBetweenTurretAndEnemy = -CalculateAngle(enemy.transform);
+                Vector3 directionToEnemy = collider.transform.position - transform.position;
+                float distanceToEnemy = directionToEnemy.magnitude;
 
-                if (angleBetweenTurretAndEnemy <= maxAngle)
+                if (distanceToEnemy <= turretRange)
                 {
-                    validTargets.Add(enemy);
+                    float angleBetweenTurretAndEnemy = -CalculateAngle(collider.transform);
+
+                    if (angleBetweenTurretAndEnemy <= maxAngle)
+                    {
+                        validTargets.Add(collider.gameObject);
+                    }
                 }
             }
         }
+    }
 
+    Transform GetTarget()
+    {
         if (validTargets.Count > 0)
         {
             switch (targetPriority)
             {
                 case TargetPriority.Closest:
-                    return GetClosestTarget(validTargets);
+                    return GetClosestTarget();
                 case TargetPriority.Furthest:
-                    return GetFurthestTarget(validTargets);
+                    return GetFurthestTarget();
                 case TargetPriority.MostHealth:
-                    return GetMostHealthTarget(validTargets);
+                    return GetMostHealthTarget();
                 case TargetPriority.LeastHealth:
-                    return GetLeastHealthTarget(validTargets);
+                    return GetLeastHealthTarget();
                 default:
-                    return GetClosestTarget(validTargets);
+                    return GetClosestTarget();
             }
         }
         else
         {
-            validTargets.RemoveRange(0, validTargets.Count);
             return null;
         }
     }
 
-    TargetPriority GetTargetPriority()
-    {
-        return targetPriority;
-    }
-
-    Transform GetClosestTarget(List<GameObject> validTargets)
+    Transform GetClosestTarget()
     {
         Transform closestTarget = null;
         float closestDistance = Mathf.Infinity;
@@ -128,7 +130,7 @@ public class AutoTurrets : MonoBehaviour
         return closestTarget;
     }
 
-    Transform GetFurthestTarget(List<GameObject> validTargets)
+    Transform GetFurthestTarget()
     {
         Transform furthestTarget = null;
         float furthestDistance = 0f;
@@ -147,7 +149,7 @@ public class AutoTurrets : MonoBehaviour
         return furthestTarget;
     }
 
-    Transform GetMostHealthTarget(List<GameObject> validTargets)
+    Transform GetMostHealthTarget()
     {
         Transform mostHealthTarget = null;
         float mostHealth = 0f;
@@ -166,7 +168,7 @@ public class AutoTurrets : MonoBehaviour
         return mostHealthTarget;
     }
 
-    Transform GetLeastHealthTarget(List<GameObject> validTargets)
+    Transform GetLeastHealthTarget()
     {
         Transform leastHealthTarget = null;
         float leastHealth = Mathf.Infinity;
@@ -184,11 +186,13 @@ public class AutoTurrets : MonoBehaviour
 
         return leastHealthTarget;
     }
+
     void UpdateTarget()
     {
-        float maxAngle = 45f;
+        float maxAngle = 25f;
         float turretRange = baseRange;
-        target = GetTarget(turretRange, maxAngle);
+        GetValidTargets(turretRange, maxAngle);
+        target = GetTarget();
     }
 
     void OnDrawGizmosSelected()
@@ -203,43 +207,64 @@ public class AutoTurrets : MonoBehaviour
 
         Vector3 direction = target.position - transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
-        Vector3 rotation = Quaternion.Lerp(rotationPart.rotation, lookRotation, Time.deltaTime * rotationSpeed).eulerAngles;
-        rotationPart.rotation = Quaternion.Euler(heigthAngle, rotation.y, 0f);
-        
+        Quaternion targetRotation = Quaternion.Euler(heigthAngle, lookRotation.eulerAngles.y, 0f);
+        rotationPart.rotation = Quaternion.Slerp(rotationPart.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
     }
 
     float CalculateAngle(Transform target)
     {
         Vector3 direction = target.position - bulletSpawnPoint.position;
         float distance = direction.magnitude;
-        float heightDifference = target.transform.position.y - transform.position.y;
+        float heightDifference = target.transform.position.y - bulletSpawnPoint.position.y;
 
         float tanAngle = Mathf.Atan2(heightDifference, distance);
         float angle = tanAngle * Mathf.Rad2Deg;
-        return angle * 2;
+        return angle;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (target == null)
         {
             return;
         }
 
-        LookAtTarget(target);
+        TurretsCircularPositionAroundTheFloor(transform.parent, target);
+
+        if (fireCountdown <= 0f)
+        {
+            Shoot();
+            fireCountdown = 1f / fireRate;
+        }
+
+        fireCountdown -= Time.fixedDeltaTime;
     }
 
     void TurretsCircularPositionAroundTheFloor(Transform floor, Transform target)
     {
-        float radius = 1.5f;
-        float angle = 0f;
-        float angleStep = 360f / floor.childCount;
+        Vector3 floorCenter = floor.position;
+        float floorRadius = floor.lossyScale.x / 2;
+        Vector3 turretPosition = transform.position;
+        Vector3 targetPosition = target.position;
+        Vector3 directionToTurret = turretPosition - floorCenter;
+        Vector3 directionToTargetNormalized = (targetPosition - floorCenter).normalized;
+        Vector3 EdgeOfFloor = floorCenter + directionToTargetNormalized * floorRadius;
+        transform.position = EdgeOfFloor;
 
-        foreach (Transform turret in floor)
+        transform.position = new Vector3(transform.position.x, turretPosition.y, transform.position.z);
+
+        LookAtTarget(target);
+
+    }
+
+    void Shoot()
+    {
+        GameObject bulletGO = ObjectPooler.Instance.SpawnFromPool(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        Bullet bullet = bulletGO.GetComponent<Bullet>();
+
+        if (bullet != null)
         {
-            Vector3 turretPosition = new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad) * radius, 0f, Mathf.Cos(angle * Mathf.Deg2Rad) * radius);
-            turret.transform.position = turretPosition;
-            angle += angleStep;
+            bullet.GetComponent<Rigidbody>().velocity = bulletSpawnPoint.transform.forward * bulletSpeed;
         }
     }
 }

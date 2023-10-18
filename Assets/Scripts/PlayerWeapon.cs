@@ -23,8 +23,7 @@ public class PlayerWeapon : MonoBehaviour
 
     private void Fire()
     {
-        GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+        GameObject bullet = ObjectPooler.Instance.SpawnFromPool(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
         bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * bulletSpeed;
-        Destroy(bullet, bulletLife);
     }
 }

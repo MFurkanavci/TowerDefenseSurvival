@@ -7,65 +7,43 @@ using System;
 public class ResourceGenerator : MonoBehaviour
 {
     public GameObject resourcePrefab;
-    public int poolSize = 10;
     public float resourceSpawnRadius = 10.0f;
     public ResourceData[] resources;
+    public static int currentResourcesForDay = 0;
 
-    private List<GameObject> resourcePool = new List<GameObject>();
-    private int resourceIndex = 0;
-    private int currentResourcesForDay = 0;
+    public int resourcesPerDay = 100;
 
-    public void RemoveAResource()
+    void Start()
     {
-        currentResourcesForDay--;
-
-        if (currentResourcesForDay <= 0)
-        {
-            SpawnAllResources();
-        }
     }
 
-    public static ResourceGenerator instance;
-
-    private void Awake()
+    void ReSpawnResource()
     {
-        instance = this;
-    }
-
-    private void Start()
-    {
-        for (int i = 0; i < poolSize; i++)
+        if (currentResourcesForDay < resourcesPerDay/2)
         {
-            Vector3 spawnPosition = GetRandomPosition();
-            GameObject resource = Instantiate(resourcePrefab, spawnPosition, Quaternion.identity);
-            resource.transform.SetParent(transform);
-            resource.SetActive(false);
-            resourcePool.Add(resource);
+            SpawnResource();
+            currentResourcesForDay++;
         }
-
-        SpawnAllResources();
     }
 
     private void SpawnResource()
     {
-        GameObject resource = resourcePool[resourceIndex];
-        resource.SetActive(true);
-        resource.transform.position = GetRandomPosition();
-        resource.GetComponent<Resource>().resourceData = GetRandomResource();
-        resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
-        resourceIndex = (resourceIndex + 1) % poolSize;
-        currentResourcesForDay++;
-    }
-
-    public void ReSpawnResource(GameObject resource)
-    {
+        GameObject resource = ObjectPooler.Instance.GetObject(resourcePrefab);
         resource.transform.position = GetRandomPosition();
         resource.GetComponent<Resource>().resourceData = GetRandomResource();
         resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
         resource.GetComponent<Resource>().SetScale();
         resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
-        resource.SetActive(true);
-        currentResourcesForDay++;
+    }
+
+    public void ReSpawnResource(GameObject resource)
+    {
+        ObjectPooler.Instance.GetObject(resourcePrefab);
+        resource.transform.position = GetRandomPosition();
+        resource.GetComponent<Resource>().resourceData = GetRandomResource();
+        resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
+        resource.GetComponent<Resource>().SetScale();
+        resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
     }
 
     private Vector3 GetRandomPosition()
@@ -102,19 +80,8 @@ public class ResourceGenerator : MonoBehaviour
         return null; 
     }
 
-    public void ResetResourcesForDay()
+    void Update()
     {
-        currentResourcesForDay = 0;
-    }
-
-    public void SpawnAllResources()
-    {
-        foreach (GameObject resource in resourcePool)
-        {
-            if (!resource.activeSelf)
-            {
-                SpawnResource();
-            }
-        }
+        ReSpawnResource();
     }
 }

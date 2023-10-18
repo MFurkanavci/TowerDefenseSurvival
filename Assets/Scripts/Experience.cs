@@ -12,7 +12,7 @@ public class Experience : MonoBehaviour
         {
             player.AddExperience(experience);
             if (player.IsLevelUp()) player.LevelUp();
-            Destroy(gameObject);
+            ObjectPooler.Instance.ReturnObject(gameObject, gameObject);
         }
     }
 }

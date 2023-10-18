@@ -6,7 +6,6 @@ using UnityEngine.AI;
 public class EnemyNAV : MonoBehaviour
 { 
     public Transform target;
-    public Transform mainTarget;
 
     public NavMeshAgent agent;
 
@@ -20,10 +19,7 @@ public class EnemyNAV : MonoBehaviour
     {
         if (target == null)
         {
-            if(mainTarget != null)
-                target = mainTarget;
-            else
-                return;
+            agent.SetDestination(new Vector3(0, 0, 0));
         }
         else
         {
@@ -34,11 +30,6 @@ public class EnemyNAV : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
-    }
-
-    public void SetMainTarget(Transform newTarget)
-    {
-        mainTarget = newTarget;
     }
 
 }

@@ -20,8 +20,6 @@ public class EnemyDamage : MonoBehaviour
 
     public bool isPlayerInRange;
 
-    public GameObject effect;
-
     [SerializeField]
     private GameObject experience;
 
@@ -35,17 +33,19 @@ public class EnemyDamage : MonoBehaviour
     }
     public void Die()
     {
-        var effect = Instantiate(deathEffect, transform.position, Quaternion.identity);
+        GameObject effect = ObjectPooler.Instance.SpawnFromPool(deathEffect, transform.position, Quaternion.identity);
         effect.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         effect.transform.rotation = Quaternion.Euler(-90, 0, 0);
-        effect.transform.SetParent(this.effect.transform);
+        effect.transform.SetParent(transform.parent);
+        effect.GetComponent<ParticleSystem>().Play();
         DropExperience();
-        gameObject.SetActive(false);
         health = enemyData.health;
+
+        ObjectPooler.Instance.ReturnObject(gameObject, gameObject);
     }
     public void DropExperience()
     {
-        GameObject experience = Instantiate(this.experience, transform.position, Quaternion.identity,effect.transform);
+        GameObject experience = ObjectPooler.Instance.SpawnFromPool(this.experience, transform.position, Quaternion.identity);
         experience.GetComponent<Experience>().experience = enemyData.experienceDrop;
     }
     private void OnTriggerEnter(Collider other)
@@ -53,7 +53,7 @@ public class EnemyDamage : MonoBehaviour
         if (other.TryGetComponent<Bullet>(out Bullet bullet))
         {
             TakeDamage(bullet.damage);
-            Destroy(bullet.gameObject);
+            ObjectPooler.Instance.ReturnObject(other.gameObject, other.gameObject);
         }
         if (other.TryGetComponent<Player>(out Player player))
         {
