@@ -2,34 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnRadius : MonoBehaviour
+public class SpawnRadius
 {
-    [SerializeField] private Camera mainCamera;
+    private Camera mainCamera;
 
-    private void Start()
+    private static SpawnRadius instance;
+
+    public static SpawnRadius Instance
+    {
+        get
+        {
+            if (instance == null)
+                instance = new SpawnRadius();
+            return instance;
+        }
+    }
+
+    private void Awake()
     {
         mainCamera = Camera.main;
     }
 
-    public void CalculateCulling(Camera cam)
+    public bool IsInCullingArea(Camera cam, Vector3 position, float radius)
     {
-        Vector3 camPos = cam.transform.position;
-        Vector3 camForward = cam.transform.forward;
-        Vector3 camRight = cam.transform.right;
-        Vector3 camUp = cam.transform.up;
-
-        Vector3 frustumCenter = camPos + camForward * cam.farClipPlane * 0.5f;
-        Vector3 frustumUp = camUp * cam.farClipPlane * Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
-        Vector3 frustumRight = camRight * cam.farClipPlane * Mathf.Tan(cam.fieldOfView * cam.aspect * 0.5f * Mathf.Deg2Rad);
-
-        Vector3 frustumFarTopLeft = frustumCenter + frustumUp - frustumRight;
-        Vector3 frustumFarTopRight = frustumCenter + frustumUp + frustumRight;
-        Vector3 frustumFarBottomLeft = frustumCenter - frustumUp - frustumRight;
-        Vector3 frustumFarBottomRight = frustumCenter - frustumUp + frustumRight;
-    }
-
-    void Update()
-    {
-        CalculateCulling(mainCamera);
+        Vector3 screenPoint = cam.WorldToViewportPoint(position);
+        bool onScreen = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
+        return onScreen;
     }
 }

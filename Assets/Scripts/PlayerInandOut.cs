@@ -37,14 +37,14 @@ public class PlayerInandOut : MonoBehaviour
                     isInside = false;
                     player.transform.position = tempPos;
                     player.SetActive(true);
-                    mainTurretControls.isInside = false;
+                    mainTurretControls.SetIsInside(false);
                 }
                 else
                 {
                     isInside = true;
                     tempPos = player.transform.position;
                     player.SetActive(false);
-                    mainTurretControls.isInside = true;
+                    mainTurretControls.SetIsInside(true);
 
                 }
                 CameraControls();

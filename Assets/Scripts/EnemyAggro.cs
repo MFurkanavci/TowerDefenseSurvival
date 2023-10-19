@@ -15,13 +15,9 @@ public class EnemyAggro : MonoBehaviour
     private float aggroTimer = 0.0f;
     private bool isAggro = false;
 
-    private void Start()
+    public void SetPlayer(Transform player)
     {
-        Player playerComponent = FindObjectOfType<Player>();
-        if (playerComponent != null)
-        {
-            player = playerComponent.transform;
-        }
+        this.player = player;
     }
 
     private void Update()

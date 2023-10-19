@@ -5,8 +5,15 @@ using UnityEngine;
 public class destroy : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
-        Destroy(gameObject, 5f);
+        Invoke("Remove", 4f);
     }
+
+    void Remove()
+    {
+        ObjectPooler.Instance.ReturnObject(gameObject, gameObject);
+    }
+
+
 }

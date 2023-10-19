@@ -13,33 +13,77 @@ public class ResourceGenerator : MonoBehaviour
 
     public int resourcesPerDay = 100;
 
-    void Start()
+    public float delayForOutOfCullingArea = 3f;
+
+    private void OnEnable()
     {
+        DayNightCycle.OnDay += HandleDay;
     }
 
-    void ReSpawnResource()
+    private void OnDisable()
     {
-        if (currentResourcesForDay < resourcesPerDay/2)
+        DayNightCycle.OnDay -= HandleDay;
+    }
+    private void HandleDay()
+    {
+        while(currentResourcesForDay < resourcesPerDay)
         {
-            SpawnResource();
-            currentResourcesForDay++;
+            Vector3 position = GetRandomPosition();
+            bool isInCullingArea = SpawnRadius.Instance.IsInCullingArea(Camera.main, position, resourceSpawnRadius);
+            if (!isInCullingArea)
+            {
+                currentResourcesForDay++;
+                StartCoroutine(SpawnResourcesWithDelay(position));
+            }
+            else continue;
         }
     }
 
-    private void SpawnResource()
+    private void Start()
+    {
+        StartCoroutine(SpawnResources());
+    }
+
+    IEnumerator SpawnResources()
+    {
+       while(currentResourcesForDay < resourcesPerDay)
+        {
+            Vector3 position = GetRandomPosition();
+            bool isInCullingArea = SpawnRadius.Instance.IsInCullingArea(Camera.main, position, resourceSpawnRadius);
+            if (isInCullingArea)
+            {
+                currentResourcesForDay++;
+                SpawnResource(position);
+            }
+            else
+            {
+                currentResourcesForDay++;
+                StartCoroutine(SpawnResourcesWithDelay(position));
+            }
+        }
+        yield return null;
+    }
+
+    IEnumerator SpawnResourcesWithDelay(Vector3 position)
+    {
+        yield return new WaitForSecondsRealtime(delayForOutOfCullingArea);
+        ReSpawnResource(position);
+    }
+
+    private void SpawnResource(Vector3 position)
     {
         GameObject resource = ObjectPooler.Instance.GetObject(resourcePrefab);
-        resource.transform.position = GetRandomPosition();
+        resource.transform.position = position;
         resource.GetComponent<Resource>().resourceData = GetRandomResource();
         resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
         resource.GetComponent<Resource>().SetScale();
         resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
     }
 
-    public void ReSpawnResource(GameObject resource)
+    public void ReSpawnResource(Vector3 position)
     {
-        ObjectPooler.Instance.GetObject(resourcePrefab);
-        resource.transform.position = GetRandomPosition();
+        GameObject resource = ObjectPooler.Instance.SpawnFromPool(resourcePrefab, position, Quaternion.identity);
+        resource.transform.position = position;
         resource.GetComponent<Resource>().resourceData = GetRandomResource();
         resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
         resource.GetComponent<Resource>().SetScale();
@@ -78,10 +122,5 @@ public class ResourceGenerator : MonoBehaviour
             }
         }
         return null; 
-    }
-
-    void Update()
-    {
-        ReSpawnResource();
     }
 }

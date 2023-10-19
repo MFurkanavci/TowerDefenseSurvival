@@ -60,6 +60,7 @@ public class ResourceGathering : MonoBehaviour
             isInRange = true;
             string resourceWeight = Math.Round(resource.currentResource, 2).ToString();
             string resourceType = "";
+            resourceTypes = resource.resourceData.resourceTypes;
             if(resource.resourceData != null)
             {
                 resourceType = resource.resourceData.resourceTypes.ToString();
@@ -80,15 +81,20 @@ public class ResourceGathering : MonoBehaviour
         }
     }
 
+    private void LevingResourceArea()
+    {
+        isInRange = false;
+        resourceTimer = 0.0f;
+        resource = null;
+        materialInfoText.text = "";
+        keyInfoText.text = "";
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent<Resource>(out Resource resource))
         {
-            isInRange = false;
-            resourceTimer = 0.0f;
-            resource = null;
-            materialInfoText.text = "";
-            keyInfoText.text = "";
+            LevingResourceArea();
         }
     }
 
@@ -114,6 +120,10 @@ public class ResourceGathering : MonoBehaviour
                 UpdateInfoText();
             }
             resource.DeactivateResource();
+        }
+        else
+        {
+            LevingResourceArea();
         }
     }
 
