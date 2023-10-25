@@ -26,7 +26,7 @@ public class TowerHealth : MonoBehaviour
 
     private void UpdateHealthText()
     {
-    healthText.text = $"Tower Health: {health}";
+        healthText.text = $"Tower Health: {health}";
     }
 
     private void OnTriggerEnter(Collider other)

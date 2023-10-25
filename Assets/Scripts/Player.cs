@@ -1,12 +1,16 @@
+using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     [Header("Datas")]
     public PlayerData playerData;
     public WeaponData weaponData;
+
+    public GameObject model;
 
     [Header("Stats")]
     public int level;
@@ -15,6 +19,34 @@ public class Player : MonoBehaviour
     public int maxHealth;
     public int health;
 
+    private void OnEnable()
+    {
+        GameManager.OnGameStateChanged += HandleGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= HandleGameStateChanged;
+    }
+
+    private void HandleGameStateChanged(GameState currentState)
+    {
+        switch (currentState)
+        {
+            case GameState.MainMenu:
+                SceneManager.LoadScene("MainMenu");
+                break;
+            case GameState.Respawning:
+                break;
+            case GameState.Playing:
+                break;
+            case GameState.Paused:
+                break;
+            case GameState.GameOver:
+                break;
+        }
+    }
+
     public void Awake()
     {
         //DontDestroyOnLoad(this);
@@ -22,13 +54,13 @@ public class Player : MonoBehaviour
 
     public void Start()
     {
-        playerData.Initialize();
-
+        
         InitializeDataToStats();
     }
 
     public void InitializeDataToStats()
     {
+        playerData.Initialize();
         level = playerData.level;
         experience = playerData.experience;
         maxExperience = playerData.maxExperience;
@@ -38,7 +70,7 @@ public class Player : MonoBehaviour
 
     public bool IsAlive()
     {
-        return health > 0;
+        return health > 1;
     }
 
     public void TakeDamage(int damage)
@@ -66,5 +98,23 @@ public class Player : MonoBehaviour
     public bool IsLevelUp()
     {
         return experience >= maxExperience;
+    }
+
+    private void Update()
+    {
+    }
+
+    private async void RespawnTimer()
+    {
+        await Task.Delay(10000);
+        GameManager.Instance.SetGameState(GameState.Playing);
+        health = maxHealth;
+    }
+
+    public void Die()
+    {
+        GameManager.Instance.SetGameState(GameState.Respawning);
+        model.SetActive(false);
+        RespawnTimer();
     }
 }

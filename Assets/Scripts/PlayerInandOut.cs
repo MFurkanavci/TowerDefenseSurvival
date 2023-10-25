@@ -8,7 +8,7 @@ public class PlayerInandOut : MonoBehaviour
 {
     public bool isInTrigger = false;
     public bool isInside = false;
-    public GameObject player, TowerResourcesPanel;   
+    public GameObject player, TowerResourcesPanel,model;   
     public TowerResources towerResources;
 
     public MainTurretControls mainTurretControls;
@@ -17,6 +17,33 @@ public class PlayerInandOut : MonoBehaviour
     Vector3 tempPos;
 
     public CinemachineVirtualCamera insideCamera;
+    private void OnEnable()
+    {
+        GameManager.OnGameStateChanged += HandleGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= HandleGameStateChanged;
+    }
+
+    private void HandleGameStateChanged(GameState currentState)
+    {
+        switch (currentState)
+        {
+            case GameState.MainMenu:
+                break;
+            case GameState.Respawning:
+                break;
+            case GameState.Playing:
+                Respawning();
+                break;
+            case GameState.Paused:
+                break;
+            case GameState.GameOver:
+                break;
+        }
+    }
 
     private void Update()
     {
@@ -25,10 +52,14 @@ public class PlayerInandOut : MonoBehaviour
             if (isInside)
             {
                 infoText.text = "Press \"Space\" to go outside";
+
+                player.GetComponent<CharaterMovement>().enabled = false;
             }
             else
             {
                 infoText.text = "Press \"Space\" to go inside\nPress \"Q\" to bank resources";
+                
+                player.GetComponent<CharaterMovement>().enabled = true;
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -36,14 +67,14 @@ public class PlayerInandOut : MonoBehaviour
                 {
                     isInside = false;
                     player.transform.position = tempPos;
-                    player.SetActive(true);
+                    model.SetActive(true);
                     mainTurretControls.SetIsInside(false);
                 }
                 else
                 {
                     isInside = true;
                     tempPos = player.transform.position;
-                    player.SetActive(false);
+                    model.SetActive(false);
                     mainTurretControls.SetIsInside(true);
 
                 }
@@ -62,7 +93,7 @@ public class PlayerInandOut : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.TryGetComponent<Player>(out Player player))
         {
             TowerResourcesPanel.SetActive(true);
             isInTrigger = true;
@@ -71,9 +102,8 @@ public class PlayerInandOut : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.TryGetComponent<Player>(out Player player))
         {
-            infoText.text = "";
             TowerResourcesPanel.SetActive(false);
             isInTrigger = false;
         }
@@ -107,5 +137,16 @@ public class PlayerInandOut : MonoBehaviour
             insideCamera.m_Lens.FieldOfView = outsideCameraFOV;
             insideCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(outsideCameraFollowOffsetx, outsideCameraFollowOffsety, outsideCameraFollowOffsetz);
         }
+    }
+
+    private void Respawning()
+    {
+        isInTrigger = true;
+        isInside = true;
+        player.transform.position = tempPos;
+        model.SetActive(false);
+        mainTurretControls.SetIsInside(true);
+        TowerResourcesPanel.SetActive(true);
+        CameraControls();
     }
 }

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6db867f095774643b758e3a6711d6da, type: 3}
+  m_Name: Silver
+  m_EditorClassIdentifier: 
+  resourceTypes: 0
+  resourceMinWeightAmount: 0
+  resourceMaxWeightAmount: 0
+  resourceMaxAmountPerDay: 0
+  resourceRegenRate: 0
+  resourceWeight: 0
+  resourceQuality: 0
+  resourceMaterial: {fileID: 0}

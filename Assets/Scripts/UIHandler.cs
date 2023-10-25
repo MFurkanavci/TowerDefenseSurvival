@@ -59,10 +59,7 @@ public class UIHandler : MonoBehaviour
 
     void Update()
     {
-        if (player.IsAlive())
-        {
-            UpdatePlayerUI();
-        }
+        UpdatePlayerUI();
     }
 
     public void OpenTalents()

@@ -57,7 +57,7 @@ public class EnemyDamage : MonoBehaviour
         }
         if (other.TryGetComponent<Player>(out Player player))
         {
-            player.health -= enemyData.damage;
+            DealDamage(player, enemyData.damage);
         }
     }
 
@@ -72,6 +72,11 @@ public class EnemyDamage : MonoBehaviour
         {
             nextAttack = Time.time + attackRate;
             DealDamage(player, enemyData.damage);
+
+            if (!player.IsAlive())
+            {
+                player.Die();
+            }
         }
     }
 
@@ -93,7 +98,7 @@ public class EnemyDamage : MonoBehaviour
     public void Update()
     {
         CheckForRange();
-        if (isPlayerInRange && enemyNAV.agent.remainingDistance <= attackRange)
+        if (isPlayerInRange && enemyNAV.agent.remainingDistance <= attackRange && target.IsAlive())
         {
             FaceTarget();
             enemyNAV.agent.velocity = Vector3.zero;

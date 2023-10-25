@@ -19,6 +19,34 @@ public class ResourceGathering : MonoBehaviour
     private ResourceTypes.Resources resourceTypes;
     private Dictionary<ResourceTypes.Resources, float> resourceAndWeight = new Dictionary<ResourceTypes.Resources, float>();
 
+    private void OnEnable()
+    {
+        GameManager.OnGameStateChanged += HandleGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= HandleGameStateChanged;
+    }
+
+    private void HandleGameStateChanged(GameState currentState)
+    {
+        switch (currentState)
+        {
+            case GameState.MainMenu:
+                break;
+            case GameState.Respawning:
+                Respawning();
+                break;
+            case GameState.Playing:
+                break;
+            case GameState.Paused:
+                break;
+            case GameState.GameOver:
+                break;
+        }
+    }
+
     Player player;
     private PlayerData playerData;
     public GameObject resourcePanel;
@@ -216,7 +244,7 @@ public class ResourceGathering : MonoBehaviour
 
     private void SetUnderWeightStats()
     {
-        resourceGatherSpeed = 1.0f / 1.15f;
+        resourceGatherSpeed = 1.0f / 1.5f;
         charaterMovement.SetSpeed(playerData.speed * 1.5f);
     }
 
@@ -230,5 +258,12 @@ public class ResourceGathering : MonoBehaviour
     {
         resourceGatherSpeed = 1.0f * 1.15f;
         charaterMovement.SetSpeed(playerData.OverWeightSpeed);
+    }
+
+    private void Respawning()
+    {
+        ResetResource();
+        UpdateWeightStats();
+        UpdateInfoText();
     }
 }
