@@ -13,6 +13,22 @@ MonoBehaviour:
   m_Name: Gun
   m_EditorClassIdentifier: 
   weaponName: gun
-  damage: 25
+  weaponID: 0
+  description: 
+  damage: 150
   attackRange: 10
   attackRate: 1
+  maxAmmo: 0
+  ammo: 0
+  reloadTime: 0
+  recoil: 0
+  criticalChance: 0
+  criticalDamage: 0
+  damageMultiplier: 0
+  attackRangeMultiplier: 0
+  attackRateMultiplier: 0
+  maxAmmoMultiplier: 0
+  reloadTimeMultiplier: 0
+  recoilMultiplier: 0
+  criticalChanceMultiplier: 0
+  criticalDamageMultiplier: 0
