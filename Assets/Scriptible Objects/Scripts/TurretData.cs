@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Turret", menuName = "Turret Data")]
+[CreateAssetMenu(fileName = "New Turret", menuName = "Game/Turret Data")]
 public class TurretData : ScriptableObject
 {
     public string turretName;
@@ -12,4 +12,6 @@ public class TurretData : ScriptableObject
     public GameObject bulletPrefab;
     public Transform bulletSpawnPoint;
     public GameObject turretPrefab;
+
+    public BuildingType buildingType;
 }

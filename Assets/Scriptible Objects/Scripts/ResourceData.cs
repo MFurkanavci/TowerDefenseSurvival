@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Resource", menuName = "Resource Data")]
+[CreateAssetMenu(fileName = "New Resource", menuName = "Game/Resource Data")]
 public class ResourceData : ScriptableObject
 {
     public ResourceTypes.Resources resourceTypes;
@@ -10,6 +10,5 @@ public class ResourceData : ScriptableObject
     public float resourceRegenRate;
     public float resourceWeight;
     public int resourceQuality;
-
-    public Material resourceMaterial;
+    public GameObject resourcePrefab;
 }

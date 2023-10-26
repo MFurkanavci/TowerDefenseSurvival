@@ -77,7 +77,10 @@ public class ResourceGenerator : MonoBehaviour
         resource.GetComponent<Resource>().resourceData = GetRandomResource();
         resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
         resource.GetComponent<Resource>().SetScale();
-        resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
+
+        GameObject model = Instantiate(resource.GetComponent<Resource>().resourcePrefab, position, Quaternion.identity, resource.transform);
+
+        model.transform.rotation = Quaternion.Euler(-90,0, 0);
     }
 
     public void ReSpawnResource(Vector3 position)
@@ -87,7 +90,9 @@ public class ResourceGenerator : MonoBehaviour
         resource.GetComponent<Resource>().resourceData = GetRandomResource();
         resource.GetComponent<Resource>().SOData(resource.GetComponent<Resource>().resourceData);
         resource.GetComponent<Resource>().SetScale();
-        resource.GetComponent<MeshRenderer>().material = resource.GetComponent<Resource>().resourceData.resourceMaterial;
+
+        GameObject model = Instantiate(resource.GetComponent<Resource>().resourcePrefab, position, Quaternion.identity, resource.transform);
+        model.transform.rotation = Quaternion.Euler(-90,0, 0);
     }
 
     private Vector3 GetRandomPosition()

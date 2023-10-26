@@ -19,4 +19,4 @@ MonoBehaviour:
   resourceRegenRate: 0
   resourceWeight: 0
   resourceQuality: 60
-  resourceMaterial: {fileID: 2100000, guid: 0ecfc18c734e74049851aa08071d9eea, type: 2}
+  resourcePrefab: {fileID: 7752703547562188695, guid: 72b1241d2d22b424a90f965e7a192448, type: 3}

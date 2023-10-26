@@ -74,5 +74,35 @@ public class TowerResources : MonoBehaviour
         resourcepanel.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = $"Gold: {Gold} kg. / {goldMax} kg.";
         resourcepanel.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = $"Iron: {Iron} kg. / {ironMax} kg.";
     }
-    
+
+    public bool HasResources(BuildingType buildingType)
+    {
+        if (Wood >= buildingType.baseWoodCost && Stone >= buildingType.baseStoneCost && Iron >= buildingType.baseIronCost && Gold >= buildingType.baseGoldCost)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void SpendResources(BuildingType buildingType)
+    {
+        Wood -= buildingType.baseWoodCost;
+        Stone -= buildingType.baseStoneCost;
+        Iron -= buildingType.baseIronCost;
+        Gold -= buildingType.baseGoldCost;
+        UpdateResources();
+    }
+
+    public void AddResources(BuildingType buildingType)
+    {
+        Wood += buildingType.baseWoodCost;
+        Stone += buildingType.baseStoneCost;
+        Iron += buildingType.baseIronCost;
+        Gold += buildingType.baseGoldCost;
+        UpdateResources();
+    }
+
 }

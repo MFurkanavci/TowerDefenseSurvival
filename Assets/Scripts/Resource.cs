@@ -13,6 +13,8 @@ public class Resource : MonoBehaviour
     public ResourceData resourceData;
 
     public ResourceTypes.Resources resourceTypes;
+
+    public GameObject resourcePrefab;
     public bool IsEmpty()
     {
         return currentResource < 0.1f;
@@ -51,6 +53,8 @@ public class Resource : MonoBehaviour
         maxResource = data.resourceMaxWeightAmount;
         minResource = data.resourceMinWeightAmount;
         currentResource = MathF.Round(UnityEngine.Random.Range(minResource, maxResource), 1);
+
+        resourcePrefab = data.resourcePrefab;
 
         gameObject.name = resourceTypes.ToString();
     }

@@ -21,3 +21,4 @@ MonoBehaviour:
   bulletPrefab: {fileID: 912246007099814282, guid: 9d745bb25591066418fea6d6038ab801, type: 3}
   bulletSpawnPoint: {fileID: 0}
   turretPrefab: {fileID: 3387561596361536064, guid: 2e76fece931200a459134b8e7ea5c408, type: 3}
+  buildingType: {fileID: 11400000, guid: 2552f45f5fce6104381fbd0536fb9bc5, type: 2}
