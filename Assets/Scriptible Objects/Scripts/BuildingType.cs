@@ -26,4 +26,24 @@ public class BuildingType : ScriptableObject
     public int upgradeStoneCost;
     public int upgradeIronCost;
     public int upgradeGoldCost;
+
+    public int GetWoodCost(int upgradeLevel)
+    {
+        return baseWoodCost + (upgradeWoodCost * upgradeLevel);
+    }
+
+    public int GetStoneCost(int upgradeLevel)
+    {
+        return baseStoneCost + (upgradeStoneCost * upgradeLevel);
+    }
+
+    public int GetIronCost(int upgradeLevel)
+    {
+        return baseIronCost + (upgradeIronCost * upgradeLevel);
+    }
+
+    public int GetGoldCost(int upgradeLevel)
+    {
+        return baseGoldCost + (upgradeGoldCost * upgradeLevel);
+    }
 }

@@ -7,10 +7,11 @@ public class TowerFloorManager : MonoBehaviour
     public GameObject towerFloorPrefab;
 
     public GameObject towerTopFloor;
+    
+
+    [SerializeField] private int towerHealth = 200;
 
     public List<GameObject> towerFloors;
-
-    [SerializeField] private int towerHealth;
 
     [SerializeField]
     List<TurretData> turretDatas;
@@ -42,17 +43,20 @@ public class TowerFloorManager : MonoBehaviour
     public void BuildFloor(FloorData floorData)
     {
         GameObject newTowerFloor = Instantiate(floorData.floorPrefab, towerFloors[towerFloorIndex].transform.position, Quaternion.identity, this.transform);
+        newTowerFloor.GetComponent<TowerFloor>().SetFloorData(floorData);
         towerFloorIndex++;
         RiseTower();
         towerFloors.Add(newTowerFloor);
-        newTowerFloor.name = "TowerFloor" + towerFloorIndex;
+        newTowerFloor.name = floorData.name;
+
+        ReCalculateHealth();
     }
 
     public void RiseTower()
     {
         foreach (GameObject towerFloor in towerFloors)
         {
-            towerFloor.transform.localPosition = new Vector3(0, towerFloor.transform.localPosition.y + 1, 0);
+            towerFloor.transform.localPosition = new Vector3(0, towerFloor.transform.localPosition.y + 4, 0);
 
             if(towerFloor.transform.GetChild(0).TryGetComponent<AutoTurrets>(out AutoTurrets towerDefence))
             {
@@ -97,7 +101,18 @@ public class TowerFloorManager : MonoBehaviour
 
     public void ReCalculateHealth()
     {
-        
+        towerHealth = 0;
+        foreach (GameObject towerFloor in towerFloors)
+        {
+            if(towerFloor.GetComponent<TowerFloor>() != null)
+            towerHealth +=towerFloor.GetComponent<TowerFloor>().GetMaxHealth();
+        }
+    }
+
+    public void UpgradeTower(int floorIndex)
+    {
+        towerFloors[floorIndex].GetComponent<TowerFloor>().LevelUp();
+        ReCalculateHealth();
     }
 
     void Update()
@@ -105,6 +120,10 @@ public class TowerFloorManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             BuildFloor(PickRandomFloorData());
+        }
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            UpgradeTower(1);
         }
     }
 }

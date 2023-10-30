@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 025fb3fb6c6135e48b98392bdcd31069, type: 3}
-  m_Name: StoneFloor
+  m_Name: StorageFloor
   m_EditorClassIdentifier: 
-  name: Stone Floor
-  floorPrefab: {fileID: 5288090321138048509, guid: 3f821bbd65948124d9adf568bc1b28c9, type: 3}
-  buildingType: {fileID: 11400000, guid: 41f124f3661c4574cbd3810baecfcb9c, type: 2}
-  floorHealth: 50
+  name: Storage Floor
+  floorPrefab: {fileID: 5079541332970679477, guid: ece0e8e2a76edf54a85b680327e23b29, type: 3}
+  buildingType: {fileID: 11400000, guid: 1202ce53de3f8eb4699c613bd6c1a050, type: 2}
+  floorHealth: 25
