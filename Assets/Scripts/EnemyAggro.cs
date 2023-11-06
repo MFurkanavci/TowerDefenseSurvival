@@ -47,6 +47,7 @@ public class EnemyAggro : MonoBehaviour
     {
         if (player == null) return;
         if (!player.GetComponent<Player>().IsAlive()) return;
+        if(!player.GetComponent<Player>().isAlive) return;
 
         Vector3 direction = player.position - transform.position;
         float angle = Vector3.Angle(direction, transform.forward);

@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     public int maxHealth;
     public int health;
 
+    public bool isAlive = true;
+
     private void OnEnable()
     {
         GameManager.OnGameStateChanged += HandleGameStateChanged;
@@ -45,11 +47,6 @@ public class Player : MonoBehaviour
             case GameState.GameOver:
                 break;
         }
-    }
-
-    public void Awake()
-    {
-        //DontDestroyOnLoad(this);
     }
 
     public void Start()
@@ -100,21 +97,19 @@ public class Player : MonoBehaviour
         return experience >= maxExperience;
     }
 
-    private void Update()
-    {
-    }
-
-    private async void RespawnTimer()
+    private async Task RespawnTimer()
     {
         await Task.Delay(10000);
         GameManager.Instance.SetGameState(GameState.Playing);
         health = maxHealth;
+        isAlive = true;
     }
 
-    public void Die()
+    public async Task Die()
     {
-        GameManager.Instance.SetGameState(GameState.Respawning);
+        isAlive = false;
         model.SetActive(false);
-        RespawnTimer();
+        GameManager.Instance.SetGameState(GameState.Respawning);
+        await RespawnTimer();
     }
 }

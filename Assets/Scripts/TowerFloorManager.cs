@@ -23,10 +23,13 @@ public class TowerFloorManager : MonoBehaviour
 
     public int maxTowerFloors = 4;
 
+    private PlayerInandOut playerInandOut;
+
     public void Start()
     {
         towerFloors = new List<GameObject>();
         towerFloors.Add(towerTopFloor);
+        playerInandOut = FindObjectOfType<PlayerInandOut>();
     }
     public TurretData PickRandomTurretData()
     {
@@ -49,6 +52,9 @@ public class TowerFloorManager : MonoBehaviour
         towerFloors.Add(newTowerFloor);
         newTowerFloor.name = floorData.name;
 
+        playerInandOut.camY += 2.5f;
+        playerInandOut.CameraControls();
+
         ReCalculateHealth();
     }
 
@@ -56,7 +62,7 @@ public class TowerFloorManager : MonoBehaviour
     {
         foreach (GameObject towerFloor in towerFloors)
         {
-            towerFloor.transform.localPosition = new Vector3(0, towerFloor.transform.localPosition.y + 4, 0);
+            towerFloor.transform.localPosition = new Vector3(0, towerFloor.transform.localPosition.y + towerFloor.transform.GetChild(1).transform.localScale.y * 2f, 0);
 
             if(towerFloor.transform.GetChild(0).TryGetComponent<AutoTurrets>(out AutoTurrets towerDefence))
             {
@@ -105,7 +111,7 @@ public class TowerFloorManager : MonoBehaviour
         foreach (GameObject towerFloor in towerFloors)
         {
             if(towerFloor.GetComponent<TowerFloor>() != null)
-            towerHealth +=towerFloor.GetComponent<TowerFloor>().GetMaxHealth();
+                towerHealth +=towerFloor.GetComponent<TowerFloor>().GetMaxHealth();
         }
     }
 
@@ -117,7 +123,7 @@ public class TowerFloorManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && !IsTowerFull())
         {
             BuildFloor(PickRandomFloorData());
         }

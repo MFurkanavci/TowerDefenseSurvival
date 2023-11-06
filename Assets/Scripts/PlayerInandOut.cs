@@ -6,17 +6,20 @@ using TMPro;
 
 public class PlayerInandOut : MonoBehaviour
 {
-    public bool isInTrigger = false;
-    public bool isInside = false;
-    public GameObject player, TowerResourcesPanel,model;   
+    private bool isInTrigger = false;
+    private bool isInside = false;
+
+    public GameObject playerGameObject, TowerResourcesPanel,model;   
     public TowerResources towerResources;
 
     public MainTurretControls mainTurretControls;
 
-    public TextMeshProUGUI infoText, resourceText;
+    public TextMeshProUGUI infoText;
     Vector3 tempPos;
 
     public CinemachineVirtualCamera insideCamera;
+
+    public float camY { get; set;}
     private void OnEnable()
     {
         GameManager.OnGameStateChanged += HandleGameStateChanged;
@@ -34,9 +37,9 @@ public class PlayerInandOut : MonoBehaviour
             case GameState.MainMenu:
                 break;
             case GameState.Respawning:
+                Respawning();
                 break;
             case GameState.Playing:
-                Respawning();
                 break;
             case GameState.Paused:
                 break;
@@ -47,49 +50,74 @@ public class PlayerInandOut : MonoBehaviour
 
     private void Update()
     {
-        if (isInTrigger)
+        if (!isInTrigger)
         {
-            if (isInside)
-            {
-                infoText.text = "Press \"Space\" to go outside";
+            infoText.text = "";
+            return;
+        }
 
-                player.GetComponent<CharaterMovement>().enabled = false;
+        if (!playerGameObject.GetComponent<Player>().isAlive)
+        {
+            infoText.text = "You are dead wait for respawn";
+            return;
+        }
+
+        if (isInside)
+        {
+            infoText.text = "Press \"Space\" to go outside";
+            playerGameObject.GetComponent<CharaterMovement>().enabled = false;
+        }
+        else
+        {
+            infoText.text = "Press \"Space\" to go inside\nPress \"Q\" to bank resources";
+            playerGameObject.GetComponent<CharaterMovement>().enabled = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (isInside && playerGameObject.GetComponent<Player>().isAlive)
+            {
+                ExitInside();
             }
             else
             {
-                infoText.text = "Press \"Space\" to go inside\nPress \"Q\" to bank resources";
-                
-                player.GetComponent<CharaterMovement>().enabled = true;
+                EnterInside();
             }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (isInside)
-                {
-                    isInside = false;
-                    player.transform.position = tempPos;
-                    model.SetActive(true);
-                    mainTurretControls.SetIsInside(false);
-                }
-                else
-                {
-                    isInside = true;
-                    tempPos = player.transform.position;
-                    model.SetActive(false);
-                    mainTurretControls.SetIsInside(true);
-
-                }
-                CameraControls();
-            }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
-                {
-                    towerResources.ModifyResource(resource, player.GetComponent<ResourceGathering>().GetResourceAmount(resource));
-                }
-                player.GetComponent<ResourceGathering>().ResetResource();
-            }
+            CameraControls();
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            BankResources();
         }
     }
+
+    private void ExitInside()
+    {
+        isInside = false;
+        playerGameObject.transform.position = tempPos;
+        model.SetActive(true);
+        mainTurretControls.SetIsInside(false);
+        playerGameObject.GetComponent<Collider>().enabled = true;
+    }
+
+    private void EnterInside()
+    {
+        isInside = true;
+        tempPos = playerGameObject.transform.position;
+        model.SetActive(false);
+        mainTurretControls.SetIsInside(true);
+        playerGameObject.GetComponent<Collider>().enabled = false;
+    }
+
+    private void BankResources()
+    {
+        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+        {
+            towerResources.ModifyResource(resource, playerGameObject.GetComponent<ResourceGathering>().GetResourceAmount(resource));
+        }
+        playerGameObject.GetComponent<ResourceGathering>().ResetResource();
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -116,8 +144,8 @@ public class PlayerInandOut : MonoBehaviour
         float outsideCameraFOV = 60f;
 
         float  insideCameraFollowOffsetx = 0f;
-        float  insideCameraFollowOffsety = 25f;
-        float  insideCameraFollowOffsetz = -8.5f;
+        float  insideCameraFollowOffsety = 25f + camY;
+        float  insideCameraFollowOffsetz = -6.5f;
 
         float outsideCameraFollowOffsetx = 0f;
         float outsideCameraFollowOffsety = 15f;
@@ -132,8 +160,8 @@ public class PlayerInandOut : MonoBehaviour
         }
         else
         {
-            insideCamera.Follow = player.transform;
-            insideCamera.LookAt = player.transform;
+            insideCamera.Follow = playerGameObject.transform;
+            insideCamera.LookAt = playerGameObject.transform;
             insideCamera.m_Lens.FieldOfView = outsideCameraFOV;
             insideCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = new Vector3(outsideCameraFollowOffsetx, outsideCameraFollowOffsety, outsideCameraFollowOffsetz);
         }
@@ -143,7 +171,7 @@ public class PlayerInandOut : MonoBehaviour
     {
         isInTrigger = true;
         isInside = true;
-        player.transform.position = tempPos;
+        playerGameObject.transform.position = tempPos;
         model.SetActive(false);
         mainTurretControls.SetIsInside(true);
         TowerResourcesPanel.SetActive(true);

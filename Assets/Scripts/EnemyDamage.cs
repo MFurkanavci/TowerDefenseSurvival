@@ -7,7 +7,7 @@ public class EnemyDamage : MonoBehaviour
     public int health = 100;
 
     private float attackRange;
-    private float attackAngle = 45.0f;
+    private readonly float attackAngle = 45.0f;
     private float attackRate;
     private float nextAttack;
 
@@ -45,8 +45,8 @@ public class EnemyDamage : MonoBehaviour
     }
     public void DropExperience()
     {
-        GameObject experience = ObjectPooler.Instance.SpawnFromPool(this.experience, transform.position, Quaternion.identity);
-        experience.GetComponent<Experience>().experience = enemyData.experienceDrop;
+        GameObject _experience = ObjectPooler.Instance.SpawnFromPool(this.experience, transform.position, Quaternion.identity);
+        _experience.GetComponent<Experience>().experience = enemyData.experienceDrop;
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -140,7 +140,6 @@ public class EnemyDamage : MonoBehaviour
         {
             isPlayerInRange = false;
             target = null;
-            player = null;
         }
     }
 

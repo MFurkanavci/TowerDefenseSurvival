@@ -15,4 +15,4 @@ MonoBehaviour:
   name: Stone Floor
   floorPrefab: {fileID: 5288090321138048509, guid: 3f821bbd65948124d9adf568bc1b28c9, type: 3}
   buildingType: {fileID: 11400000, guid: 41f124f3661c4574cbd3810baecfcb9c, type: 2}
-  floorHealth: 50
+  floorMaxHealth: 200

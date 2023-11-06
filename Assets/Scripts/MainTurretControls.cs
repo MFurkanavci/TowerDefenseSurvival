@@ -14,8 +14,20 @@ public class MainTurretControls : MonoBehaviour
 
     private float nextFire = 0f;
     private bool isInside = false;
-
+    private bool isDead = false;
     private Plane ground;
+
+    [SerializeField] private GameObject towerTopFloor;
+
+    private void OnEnable()
+    {
+        GameManager.OnGameStateChanged += HandleGameStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= HandleGameStateChanged;
+    }
 
     private void Start()
     {
@@ -24,15 +36,15 @@ public class MainTurretControls : MonoBehaviour
 
     private void Update()
     {
-        if (isInside)
+        if (isInside && !isDead)
         {
-            TurretsCircularPositionAroundTheFloor(transform.parent,MousePosition());
+            TurretsCircularPositionAroundTheFloor(towerTopFloor.transform,MousePosition());
             HandleRotation();
             HandleShooting();
         }
     }
 
-    private Vector3 MousePosition()
+     private Vector3 MousePosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         float distance;
@@ -47,25 +59,19 @@ public class MainTurretControls : MonoBehaviour
 
     private void HandleRotation()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        float distance;
+        Vector3 targetPoint = GetMousePositionOnGround();
+        Vector3 turretPosition = turret.transform.position;
+        Vector3 direction = targetPoint - turretPosition;
 
-        if (ground.Raycast(ray, out distance))
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        turret.transform.rotation = Quaternion.Slerp(turret.transform.rotation, rotation, rotationSpeed * Time.deltaTime);
+
+        // Limit the tilt angle
+        float tiltAngle = Quaternion.Angle(turret.transform.rotation, rotation);
+        if (tiltAngle > maxTiltAngle)
         {
-            Vector3 targetPoint = ray.GetPoint(distance);
-            Vector3 turretPosition = turret.transform.position;
-            Vector3 direction = targetPoint - turretPosition;
-
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            turret.transform.rotation = Quaternion.Slerp(turret.transform.rotation, rotation,1f);
-
-            // Limit the tilt angle
-            float tiltAngle = Quaternion.Angle(turret.transform.rotation, rotation);
-            if (tiltAngle > maxTiltAngle)
-            {
-                Quaternion maxTiltRotation = Quaternion.Euler(maxTiltAngle * Mathf.Sign(direction.y), rotation.eulerAngles.y, rotation.eulerAngles.z);
-                turret.transform.rotation = Quaternion.Slerp(turret.transform.rotation, maxTiltRotation, Time.deltaTime * rotationSpeed);
-            }
+            Quaternion maxTiltRotation = Quaternion.Euler(maxTiltAngle * Mathf.Sign(direction.y), rotation.eulerAngles.y, rotation.eulerAngles.z);
+            turret.transform.rotation = Quaternion.Slerp(turret.transform.rotation, maxTiltRotation, rotationSpeed * Time.deltaTime);
         }
     }
 
@@ -85,23 +91,44 @@ public class MainTurretControls : MonoBehaviour
         bullet.GetComponent<Rigidbody>().velocity = shootingDirection * bulletSpeed;
     }
 
+    private Vector3 GetMousePositionOnGround()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        float distance;
+
+        if (ground.Raycast(ray, out distance))
+        {
+            return ray.GetPoint(distance);
+        }
+
+        return Vector3.zero;
+    }
+
     public void SetIsInside(bool inside)
     {
         isInside = inside;
     }
 
-    private void TurretsCircularPositionAroundTheFloor(Transform floor,Vector3 target)
+    private void TurretsCircularPositionAroundTheFloor(Transform floor, Vector3 target)
     {
         Vector3 floorCenter = floor.position;
-        float floorRadius = floor.lossyScale.x / 2;
-        Vector3 turretPosition = transform.position;
-        Vector3 targetPosition = target;
-        Vector3 directionToTurret = turretPosition - floorCenter;
-        Vector3 directionToTargetNormalized = (targetPosition - floorCenter).normalized;
-        Vector3 EdgeOfFloor = floorCenter + directionToTargetNormalized * floorRadius;
-        transform.position = EdgeOfFloor;
+        float floorRadius = floor.lossyScale.x;
+        Vector3 directionToTargetNormalized = (target - floorCenter).normalized;
+        Vector3 edgeOfFloor = floorCenter + directionToTargetNormalized * floorRadius;
 
-        transform.position = new Vector3(transform.position.x, turretPosition.y, transform.position.z);
+        transform.position = new Vector3(edgeOfFloor.x, transform.position.y, edgeOfFloor.z);
+    }
 
+    private void HandleGameStateChanged(GameState currentState)
+    {
+        switch (currentState)
+        {
+            case GameState.Respawning:
+                isDead = true;
+                break;
+            case GameState.Playing:
+                isDead = false;
+                break;
+        }
     }
 }

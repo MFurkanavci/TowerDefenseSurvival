@@ -59,26 +59,26 @@ public class GameManager : MonoBehaviour
 
     private void MainMenu()
     {
-
+        // Method intentionally left empty.
     }
 
     private void Playing()
     {
-
+        // Method intentionally left empty.
     }
 
     private void Respawning()
     {
-
+        // Method intentionally left empty.
     }
 
     private void Paused()
     {
-
+        // Method intentionally left empty.
     }
 
     private void GameOver()
     {
-
+        // Method intentionally left empty.
     }
 }

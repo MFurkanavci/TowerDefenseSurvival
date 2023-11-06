@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c088b2e81ce06244cbd08526d7661906, type: 3}
+  m_Name: RadioTowerData
+  m_EditorClassIdentifier: 
+  buildingType: {fileID: 11400000, guid: 9d1a2fc588a1c7a49863ccf06b046e50, type: 2}
+  name: Radio Tower
+  radioTowerPrefab: {fileID: 427931214244915439, guid: 5b1fcd696bec1e743aba0eb0a12fba7e, type: 3}
+  radius: 5

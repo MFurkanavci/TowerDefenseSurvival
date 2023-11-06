@@ -17,7 +17,7 @@ public class ResourceGathering : MonoBehaviour
     private CharaterMovement charaterMovement;
     private Resource resource;
     private ResourceTypes.Resources resourceTypes;
-    private Dictionary<ResourceTypes.Resources, float> resourceAndWeight = new Dictionary<ResourceTypes.Resources, float>();
+    private readonly Dictionary<ResourceTypes.Resources, float> resourceAndWeight = new Dictionary<ResourceTypes.Resources, float>();
 
     private void OnEnable()
     {
@@ -62,9 +62,9 @@ public class ResourceGathering : MonoBehaviour
 
     private void InitializeResourceAmounts()
     {
-        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+        foreach (ResourceTypes.Resources _resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
         {
-            resourceAndWeight.Add(resource, 0);
+            resourceAndWeight.Add(_resource, 0);
         }
     }
 
@@ -72,44 +72,44 @@ public class ResourceGathering : MonoBehaviour
     {
         resourcePanel.SetActive(true);
 
-        foreach (ResourceTypes.Resources resource in resourceAndWeight.Keys)
+        foreach (ResourceTypes.Resources _resource in resourceAndWeight.Keys)
         {
-            float weight = resourceAndWeight[resource];
-            var resourceText = resourcePanel.transform.Find(resource.ToString()).GetComponent<TextMeshProUGUI>();
-            resourceText.text = $"{resource}\n{Math.Round(weight,1)} kg.";
+            float weight = resourceAndWeight[_resource];
+            var resourceText = resourcePanel.transform.Find(_resource.ToString()).GetComponent<TextMeshProUGUI>();
+            resourceText.text = $"{_resource}\n{Math.Round(weight,1)} kg.";
         }
         totalWeightText.text = $"Total Weight\n{Math.Round(GetTotalWeight(), 1)} kg. / {maxResourceWeight} kg.";
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.TryGetComponent<Resource>(out Resource resource))
+        if (other.TryGetComponent<Resource>(out Resource _resource))
         {
             isInRange = true;
-            string resourceWeight = Math.Round(resource.currentResource, 2).ToString();
+            string resourceWeight = Math.Round(_resource.currentResource, 2).ToString();
             string resourceType = "";
-            resourceTypes = resource.resourceData.resourceTypes;
-            if(resource.resourceData != null)
+            resourceTypes = _resource.resourceData.resourceTypes;
+            if(_resource.resourceData != null)
             {
-                resourceType = resource.resourceData.resourceTypes.ToString();
+                resourceType = _resource.resourceData.resourceTypes.ToString();
             }
 
             materialInfoText.text = $"{resourceWeight} kg. of {resourceType}";
-            this.resource = resource;
+            this.resource = _resource;
 
-            if (resource.currentResource > resourceGain)
+            if (_resource.currentResource > resourceGain)
             {
-                keyInfoText.text = $"Press E to gather \n{Math.Round(resourceGain,1)} kg. of {resourceType}";
+                keyInfoText.text = $"Hold E to gather \n{Math.Round(resourceGain,1)} kg. of {resourceType}";
             }
             else
             {
-                keyInfoText.text = $"Press E to gather \n{Math.Round(resource.currentResource,1)} kg. of {resourceType}";
+                keyInfoText.text = $"Hold E to gather \n{Math.Round(_resource.currentResource,1)} kg. of {resourceType}";
             }
             UpdateInfoText();
         }
     }
 
-    private void LevingResourceArea()
+    private void LeavingResourceArea()
     {
         isInRange = false;
         resourceTimer = 0.0f;
@@ -120,9 +120,9 @@ public class ResourceGathering : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<Resource>(out Resource resource))
+        if (other.TryGetComponent<Resource>(out Resource _resource))
         {
-            LevingResourceArea();
+            LeavingResourceArea();
         }
     }
 
@@ -151,7 +151,7 @@ public class ResourceGathering : MonoBehaviour
         }
         else
         {
-            LevingResourceArea();
+            LeavingResourceArea();
         }
     }
 
@@ -190,16 +190,16 @@ public class ResourceGathering : MonoBehaviour
 
     public void ResetResource()
     {
-        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+        foreach (ResourceTypes.Resources _resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
         {
-            resourceAndWeight[resource] = 0;
+            resourceAndWeight[_resource] = 0;
         }
         UpdateInfoText();
     }
 
-    public float GetResourceAmount(ResourceTypes.Resources resource)
+    public float GetResourceAmount(ResourceTypes.Resources _resource)
     {
-        return resourceAndWeight[resource];
+        return resourceAndWeight[_resource];
     }
 
     public void SOData(PlayerData data)
@@ -212,9 +212,9 @@ public class ResourceGathering : MonoBehaviour
     public float GetTotalWeight()
     {
         float totalWeight = 0;
-        foreach (ResourceTypes.Resources resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
+        foreach (ResourceTypes.Resources _resource in System.Enum.GetValues(typeof(ResourceTypes.Resources)))
         {
-            totalWeight += resourceAndWeight[resource];
+            totalWeight += resourceAndWeight[_resource];
         }
         return totalWeight;
     }

@@ -15,7 +15,7 @@ public class ObjectPooler
         }
     }
 
-    private Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
+    private readonly Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
 
     public void CreatePool(GameObject prefab, int poolSize,Transform parent)
     {
@@ -39,14 +39,11 @@ public class ObjectPooler
     {
         string poolKey = prefab.name;
 
-        if (poolDictionary.ContainsKey(poolKey))
+        if (poolDictionary.ContainsKey(poolKey) && poolDictionary[poolKey].Count > 0)
         {
-            if (poolDictionary[poolKey].Count > 0)
-            {
-                GameObject objectToSpawn = poolDictionary[poolKey].Dequeue();
-                objectToSpawn.SetActive(true);
-                return objectToSpawn;
-            }
+            GameObject objectToSpawn = poolDictionary[poolKey].Dequeue();
+            objectToSpawn.SetActive(true);
+            return objectToSpawn;
         }
 
         return null;
