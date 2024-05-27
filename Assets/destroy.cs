@@ -14,6 +14,4 @@ public class destroy : MonoBehaviour
     {
         ObjectPooler.Instance.ReturnObject(gameObject, gameObject);
     }
-
-
 }

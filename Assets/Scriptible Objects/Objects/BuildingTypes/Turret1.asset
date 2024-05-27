@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   baseWoodCost: 0
-  baseStoneCost: 12
-  baseIronCost: 15
-  baseGoldCost: 5
+  baseStoneCost: 0
+  baseIronCost: 0
+  baseGoldCost: 0
   upgradeWoodCost: 0
   upgradeStoneCost: 24
   upgradeIronCost: 35

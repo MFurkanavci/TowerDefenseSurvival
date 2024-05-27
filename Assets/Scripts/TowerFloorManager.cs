@@ -131,5 +131,9 @@ public class TowerFloorManager : MonoBehaviour
         {
             UpgradeTower(1);
         }
+        if(Input.GetKeyDown(KeyCode.Y))
+        {
+            SetTurretData(PickRandomTurretData(), 1);
+        }
     }
 }
